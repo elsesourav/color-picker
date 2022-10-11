@@ -1,0 +1,218 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* outline: solid 1px #f00; */
+  font-family: sans-serif;
+}
+:root {
+  --color: #ff0000;
+  --selecter-top: 0px;
+  --main-selecter-top: 0px;
+  --main-selecter-left: 0px;
+  --main-selecter-width: 8px;
+  --main-selecter-height: 8px;
+}
+body {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000000;
+  display: grid;
+  place-items: center;
+}
+#me {
+  position: absolute;
+  top: 50px;
+  font-weight: bold;
+  font-size: 3rem;
+  color: #000000;
+  font-family: sans-serif;
+  text-shadow: 0 0 0 #00000000;
+  animation: aniMe linear 2s infinite;
+}
+@keyframes aniMe {
+  0% {
+    text-shadow: 0 0 0 #00000000;
+  } 50% {
+    text-shadow: 0 0 1px var(--color), 0 0 5px var(--color), 0 0 10px var(--color), 0 0 20px var(--color), 0 0 50px var(--color), 0 0 100px var(--color);
+  }
+}
+main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  display: grid;
+  backdrop-filter: blur(2px);
+}
+main section {
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  display: grid;
+  gap: 20px;
+  grid-template-rows: 250px 1fr;
+}
+main section #color-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+}
+#color-picker,
+#color-choice,
+#copy-color-section {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #333333;
+  box-shadow: 2px 2px 6px #000000;
+}
+
+#color-choice #choice-hsl, #color-picker #color-pick, #copy-color-section section {
+  position: absolute;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  display: grid;
+  outline: solid 1px #000000;
+  border-radius: 3px;
+  overflow: hidden;
+  inset: 4px;
+}
+#color-naems {
+  position: relative;
+  position: relative;
+  inset: 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  border-radius: 3px;
+  overflow: hidden;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: 10fr 3fr 13fr;
+  place-items: center;
+}
+#hex-color-code, #rgb-color-code {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: transparent;
+  justify-content: center;
+  text-shadow: 1px 1px 2px #000000;
+  align-items: center;
+  cursor: grab;
+}
+#hex-color-code.copy, #rgb-color-code.copy {
+  cursor:grabbing;
+}
+#hex-color-code span {
+  display: flex;
+  padding: 3px 8px;
+}
+#hex-color-code.copy span {
+  background: #16b1b1; 
+}
+#span #rgb-color-code{
+  padding: 3px 8px;
+}
+#hex-color-code b { 
+  color: var(--color);
+  padding-right: 2px;
+}
+#hex-color-code.copy b { 
+  color: #ffffff;
+}
+#hex-color-code p {
+  font-weight: bold;
+}
+#hex-color-code.copy p {
+  color: #ffffff;
+}
+#rgb-color-code b { 
+  padding-right: 2px;
+}
+#rgb-color-code.copy b { 
+  color: #ffffff; 
+}
+#rgb-color-code p {
+  font-weight: bold;
+  color: var(--color);
+}
+#rgb-color-code.copy p {
+  color: #ffffff;
+}
+#rgb-color-code.copy {
+  background: #16b1b1; 
+}
+#show-color {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 10px);
+  background: var(--color);
+  box-shadow: 0 0 3px #000000;
+  border-radius: 5px;
+}
+#selected {
+  position: absolute;
+  width: 111%;
+  height: 4px;
+  left: -5%;
+  top: calc(var(--selecter-top) + 4px);
+  transition: linear top 0.3s;
+  border: solid 1px #ffffff;
+  outline: solid 3px #00000055;
+}
+c::before {
+  z-index: 100;
+}
+#main-selected {
+  position: absolute;
+  width: var(--main-selecter-width);
+  height: var(--main-selecter-height);
+  top: calc(var(--main-selecter-left) + 4px);
+  right: calc(var(--main-selecter-top) + 4px);
+  transition: linear top 0.3s, linear right 0.3s;
+  border: solid 1px #ffffff;
+  outline: solid 2px #00000055;
+  border-radius: 5px;
+}
+#tost {
+  position: absolute;
+  z-index: 100;
+  bottom: -50px;
+  width: 200px;
+  height: 40px;
+  background: #ffffff;
+  left: calc(50% - 100px);
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+  font-weight: 900;
+  border-radius: 10px;
+  box-shadow: 0 0 3px #000, 0 0  10px #000000;
+  border: solid 1px #ff0000;
+  text-shadow: 0 0 1px #0000;
+  opacity: 0;
+  transition: opacity linear 0.3s;
+  user-select: none;
+  touch-action: none;
+}
+#tost.active {
+  opacity: 1;
+  transition: opacity linear 1s;
+}
+
+#color-picker #color-pick {
+  grid-template-columns: repeat(var(--max), 1fr);
+  transform: rotate(90deg);
+}
+
+nn {
+  background-color: #282a38;
+}
