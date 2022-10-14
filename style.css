@@ -1,4 +1,6 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -6,12 +8,11 @@
   font-family: sans-serif;
 }
 :root {
-  --color: #ff0000;
-  --selecter-top: 0px;
-  --main-selecter-top: 0px;
-  --main-selecter-left: 0px;
-  --main-selecter-width: 8px;
-  --main-selecter-height: 8px;
+  --color: #ffffff;
+  --cursor-x: 130px;
+  --cursor-y: 130px;
+  --main-selecter-radius: 12px;
+  --pad: 20px;
 }
 body {
   position: relative;
@@ -22,22 +23,15 @@ body {
   display: grid;
   place-items: center;
 }
+
 #me {
   position: absolute;
-  top: 50px;
-  font-weight: bold;
-  font-size: 3rem;
-  color: #000000;
+  right: 1.5vh;
+  top: 1.5vh;
+  font-weight: 900;
   font-family: sans-serif;
-  text-shadow: 0 0 0 #00000000;
-  animation: aniMe linear 2s infinite;
-}
-@keyframes aniMe {
-  0% {
-    text-shadow: 0 0 0 #00000000;
-  } 50% {
-    text-shadow: 0 0 1px var(--color), 0 0 5px var(--color), 0 0 10px var(--color), 0 0 20px var(--color), 0 0 50px var(--color), 0 0 100px var(--color);
-  }
+  color: #000000;
+  text-shadow: 0 0 1px #fff;1
 }
 main {
   position: relative;
@@ -46,23 +40,35 @@ main {
   display: grid;
   place-items: center;
   display: grid;
-  backdrop-filter: blur(2px);
 }
 main section {
+  --padding-w: calc(100vw - 300px);
+  --padding-h: calc(100vh - 460px);
   position: fixed;
-  width: 320px;
-  height: 320px;
+  width: auto;
+  height: auto;
   display: grid;
   gap: 20px;
-  grid-template-rows: 250px 1fr;
+  padding: calc(var(--padding-h) / 4) calc(var(--padding-w) / 4);
+  grid-template-rows: 260px 200px;
+  background: #222222;
+  background-image:
+  linear-gradient(45deg, #181818, transparent), 
+  linear-gradient(-45deg, #181818, transparent),
+  linear-gradient(45deg, transparent, #181818),
+  linear-gradient(-45deg, transparent, #181818);
+  background-size: 4px 4px;    
+  background-position: 0 0, 2px 0, 2px -2px, 0px 2px;
+  box-shadow: inset 0 0 30px #00000077;
 }
+
 main section #color-box {
   position: relative;
   width: 100%;
   height: 100%;
   gap: 20px;
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 260px 40px;
 }
 #color-picker,
 #color-choice,
@@ -70,19 +76,31 @@ main section #color-box {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #333333;
-  box-shadow: 2px 2px 6px #000000;
 }
 
-#color-choice #choice-hsl, #color-picker #color-pick, #copy-color-section section {
-  position: absolute;
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
-  display: grid;
-  outline: solid 1px #000000;
-  border-radius: 3px;
+#color-pick {
+  width: 100%;
+  height: 260px;
+  border-radius: 100%;
   overflow: hidden;
-  inset: 4px;
+  box-shadow: 0 0 5px #000000;
+}
+#color-pick::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  z-index: 100;
+}
+
+#choice-hsl::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  z-index: 100;
 }
 #color-naems {
   position: relative;
@@ -97,7 +115,8 @@ main section #color-box {
   grid-template-columns: 10fr 3fr 13fr;
   place-items: center;
 }
-#hex-color-code, #rgb-color-code {
+#hex-color-code,
+#rgb-color-code {
   position: relative;
   width: 100%;
   height: 100%;
@@ -108,24 +127,25 @@ main section #color-box {
   align-items: center;
   cursor: grab;
 }
-#hex-color-code.copy, #rgb-color-code.copy {
-  cursor:grabbing;
+#hex-color-code.copy,
+#rgb-color-code.copy {
+  cursor: grabbing;
 }
 #hex-color-code span {
   display: flex;
   padding: 3px 8px;
 }
 #hex-color-code.copy span {
-  background: #16b1b1; 
+  background: #16b1b1;
 }
-#span #rgb-color-code{
+#span #rgb-color-code {
   padding: 3px 8px;
 }
-#hex-color-code b { 
+#hex-color-code b {
   color: var(--color);
   padding-right: 2px;
 }
-#hex-color-code.copy b { 
+#hex-color-code.copy b {
   color: #ffffff;
 }
 #hex-color-code p {
@@ -134,11 +154,11 @@ main section #color-box {
 #hex-color-code.copy p {
   color: #ffffff;
 }
-#rgb-color-code b { 
+#rgb-color-code b {
   padding-right: 2px;
 }
-#rgb-color-code.copy b { 
-  color: #ffffff; 
+#rgb-color-code.copy b {
+  color: #ffffff;
 }
 #rgb-color-code p {
   font-weight: bold;
@@ -148,7 +168,7 @@ main section #color-box {
   color: #ffffff;
 }
 #rgb-color-code.copy {
-  background: #16b1b1; 
+  background: #16b1b1;
 }
 #show-color {
   position: relative;
@@ -167,20 +187,18 @@ main section #color-box {
   transition: linear top 0.3s;
   border: solid 1px #ffffff;
   outline: solid 3px #00000055;
-}
-c::before {
-  z-index: 100;
+  z-index: 2;
 }
 #main-selected {
   position: absolute;
-  width: var(--main-selecter-width);
-  height: var(--main-selecter-height);
-  top: calc(var(--main-selecter-left) + 4px);
-  right: calc(var(--main-selecter-top) + 4px);
-  transition: linear top 0.3s, linear right 0.3s;
-  border: solid 1px #ffffff;
-  outline: solid 2px #00000055;
-  border-radius: 5px;
+  width: var(--main-selecter-radius);
+  height: var(--main-selecter-radius);
+  left: calc(var(--cursor-x) - var(--main-selecter-radius) / 2);
+  top: calc(var(--cursor-y) - var(--main-selecter-radius) / 2);
+  border: solid 2px #ffffff;
+  background: var(--color);
+  box-shadow: 0 0 1px #000000, 0 0 3px #000000;
+  border-radius: 100%;
 }
 #tost {
   position: absolute;
@@ -195,7 +213,7 @@ c::before {
   font-weight: bold;
   font-weight: 900;
   border-radius: 10px;
-  box-shadow: 0 0 3px #000, 0 0  10px #000000;
+  box-shadow: 0 0 3px #000, 0 0 10px #000000;
   border: solid 1px #ff0000;
   text-shadow: 0 0 1px #0000;
   opacity: 0;
@@ -208,11 +226,8 @@ c::before {
   transition: opacity linear 1s;
 }
 
-#color-picker #color-pick {
-  grid-template-columns: repeat(var(--max), 1fr);
-  transform: rotate(90deg);
+nn {
+  background-color: hwb(233 16% 78%);
 }
 
-nn {
-  background-color: #282a38;
-}
+
