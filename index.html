@@ -7,21 +7,30 @@
   <meta name="theme-color" content="#222222" />
   <title>Color Picker</title>
   <link rel="stylesheet" href="style.css">
+  <script defer src="textLibrary.js"></script>
   <script defer src="utils.js"></script>
   <script defer src="main.js"></script>
 </head>
 <body>
-  <div id="me">©SouravBarui2022</div> 
+  <div id="me" class="tl-glow opacity-0.6 brightness-0.2 animationTime-6 color-#fff">
+    ©SouravBarui2022
+  </div> 
   <main>
-    <section id="secn">
+    <div id="main-picker">
+
+      <div id="main-selecter"></div>
+    </div>
+    <div id="brightness-picker">
+
+      <div id="brithtness-selecter"></div>
+    </div>
+    <!-- <section id="secn">
       <div id="color-box">
         <div id="color-picker">
           <div id="color-pick"></div>
-          <div id="main-selected"></div>
         </div>
         <div id="color-choice">
           <div id="choice-bright"></div>
-          <div id="brithtness-selected"></div>
         </div>
       </div>
       <div id="copy-color-section">
@@ -32,7 +41,7 @@
         </div>
         </div>
         <div id="tost">Color code copied</div>
-    </section>
+    </section> -->
   </main>
 
 

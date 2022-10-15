@@ -1,7 +1,7 @@
 "use strict"
 const root = document.querySelector(":root");
-const mainCvsW = 400;
-const mainCvsH = 400;
+const mainCvsW = 360;
+const mainCvsH = 360;
 
 class Canvas {
   constructor(appendElement, width, height) {
@@ -75,8 +75,8 @@ const map = (point, start, end, min, max) => {
   return ((max - min) * per) + min;
 }
 
-const isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
-
+let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
+isMobile = true;
 function rgbToHsl(r, g, b) {
   r /= 255, g /= 255, b /= 255;
   let max = Math.max(r, g, b), min = Math.min(r, g, b);
