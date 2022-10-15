@@ -1,13 +1,55 @@
 "use strict"
 const root = document.querySelector(":root");
-const winw = 260;
-const winh = 260;
-const cvs = document.createElement("canvas");
-cvs.setAttribute("width", winw);
-cvs.setAttribute("height", winh);
-cvs.style.width = `${winw}px`;
-cvs.style.height = `${winh}px`;
-const ctx = cvs.getContext("2d");
+const mainCvsW = 400;
+const mainCvsH = 400;
+
+class Canvas {
+  constructor(appendElement, width, height) {
+    this.appendElement = appendElement;
+    this.width = width;
+    this.height = height;
+    this.canvas = document.createElement("canvas");
+    this.appendElement.appendChild(this.canvas);
+    this.canvas.setAttribute("width", this.width);
+    this.canvas.setAttribute("height", this.height);
+    this.canvas.style.width = `${this.width}px`;
+    this.canvas.style.height = `${this.height}px`;
+    this.context = this.canvas.getContext("2d");
+  }
+  fillStyle = color => this.context.fillStyle = color;
+  lineTo = (x, y) => this.context.lineTo(x, y);
+  clearRect = () => this.context.clearRect(0, 0, this.width, this.height);
+  fillRect = (x, y, w, h) => this.context.fillRect(x, y, w, h);
+  scale = (x, y) => this.context.scale(x, y);
+
+  createRadialGradient = (x1, y1, r1, x2, y2, r2) =>
+    this.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+  createLinearGradient = (x1, y1, x2, y2) =>
+    this.context.createLinearGradient(x1, y1, x2, y2);
+
+  arc = (x, y, radius, startAngle, endAngle, anti) => {
+    this.context.beginPath();
+    this.context.arc(x, y, radius, startAngle, endAngle, anti);
+    this.context.closePath();
+  }
+  moveTo = (x, y) => {
+    this.context.beginPath();
+    this.context.moveTo(x, y);
+  };
+  stroke = (strokeWidth) => {
+    this.context.lineWidth = strokeWidth;
+    this.context.stroke();
+    this.context.closePath();
+  }
+  fill = () => {
+    this.context.fill();
+    this.context.closePath();
+  };
+
+  // for image 
+  getImageData = (sx, sy, sw, sh) => this.context.getImageData(sx, sy, sw, sh);
+}
+
 
 /* ---------- math ---------- */
 const PI = Math.PI;
@@ -31,17 +73,6 @@ const random = (start = 0, end = 1, int_floor = false) => {
 const map = (point, start, end, min, max) => {
   const per = (point - start) / (end - start);
   return ((max - min) * per) + min;
-}
-
-const moveTo = (x, y) => {
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-};
-const lineTo = (x, y) => ctx.lineTo(x, y);
-
-const stroke = (strokeWidth) => {
-  ctx.lineWidth = strokeWidth;
-  ctx.stroke();
 }
 
 const isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;

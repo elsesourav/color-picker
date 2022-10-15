@@ -1,109 +1,227 @@
 const secn = ID("secn");
 const colorBox = ID("color-box");
-const choiceHsl = ID("choice-hsl");
 const colorPick = ID("color-pick");
-colorPick.appendChild(cvs)
+const mainSelected = ID("main-selected");
+const choiceBright = ID("choice-bright");
 
-let rgbColor = {
+let bright = 255;
+let MSLocation = { x: 130, y: 130 }; // main selector location mouse and touch x, y
+let BSLocationY = 0; // brightness selector location mouse and touch y
+let rgbaColor = { 
   r: 255,
   g: 255,
   b: 255,
 }
- 
-
-const mainSelected = ID("main-selected");
-const hsl = document.querySelectorAll("c");
-
-
-choiceHsl.addEventListener("click", choiceHslFun);
-choiceHsl.addEventListener("mouseenter", choiceHslFun);
-choiceHsl.addEventListener("mousemove", choiceHslFun);
 
 //type of color: Name, rgb, hex, hsl, hwb, cmyk, Ncol;
 
-let x = winw / 2, y = winh / 2;
-let radius = 150, _1deg = toRadian(1.5);
+const mc = new Canvas(colorPick, mainCvsW, mainCvsH); // main color picker canvas
+// mc.scale(0.65, 0.65); 
+let x = mainCvsW / 2, y = mainCvsH / 2; // hulf main canvas width height
+let radius = mainCvsW / 2, _1deg = toRadian(1.5);
+const insert = 7;
 
-for(let i = 0; i < 360; i++) {
-  let angle = toRadian(i);
-  ctx.fillStyle = `hsl(${i}, 100%, 50%)`;
-  ctx.beginPath();
-  moveTo(x, y);
-  lineTo(x + radius * sin(angle), y + radius * cos(angle));
-  lineTo(x + radius * sin(angle + _1deg), y + radius * cos(angle + _1deg));
-  ctx.fill();
-  ctx.closePath();
-}
 
-const insert = 5;
-const g = ctx.createRadialGradient(x, y, winw / 2 - insert, x, y, insert);
-const divi = 200, _color = getRGB("rgb(255, 255, 255)");
-for (let i = 1; i <= divi; i++) {
-  let alpha = (1 / divi);
-  g.addColorStop(
-    alpha * i, `rgba(${_color[0]}, ${_color[1]}, ${_color[2]}, ${alpha * i})`);
+setCanvasColor(); // first time set color auto
+
+function setCanvasColor() {
+  // create hsl 0 to 360 deg all color 
+  for (let i = 0; i < 360; i++) {
+    const angle = toRadian(i);
+    mc.fillStyle(`hsl(${i}, 100%, 50%)`);
+    mc.moveTo(x, y);
+    mc.lineTo(x + radius * sin(angle), y + radius * cos(angle));
+    mc.lineTo(x + radius * sin(angle + _1deg), y + radius * cos(angle + _1deg));
+    mc.fill();
+  }
+
+  // creat brightness color
+  const gradient = mc.createRadialGradient(x, y, radius, x, y, 1); // create radial gradient
+  const divi = 1000;
+  const delta = 1 / divi;
+  for (let i = delta; i <= 1; i += delta) {
+    gradient.addColorStop(i, `rgba(${bright}, ${bright}, ${bright}, ${i})`);
+  }
+  mc.fillStyle(gradient);
+  mc.arc(x, y, radius - insert, 0, Math.PI * 2);
+  mc.fill();
+
+  let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
+
+  rgbaColor = {
+    r: rgba[0],
+    g: rgba[1],
+    b: rgba[2],
+    a: rgba[3]
+  }
+
+  const { r, g, b } = rgbaColor;
+  root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
+
+  return mc.getImageData(0, 0, mainCvsW, mainCvsH).data;
 }
-ctx.fillStyle = g;
-ctx.fillRect(0 + insert, 0 + insert, winw - insert * 2, winh - insert * 2);
 
 
 let mouseClicking = false;
-let clrPkrOfstLeft = colorBox.offsetLeft + secn.offsetLeft;
-let clrPkrOfstTop = colorBox.offsetTop + secn.offsetTop;
+const clrPkrOfstLeft = colorBox.offsetLeft + secn.offsetLeft;
+const clrPkrOfstTop = colorBox.offsetTop + secn.offsetTop;
 
-// pick canvas color any particular position
-const pickCanvasColor = (e, isClick = false) => {
-  if(!mouseClicking && !isMobile && !isClick) return;
-  let location; // mouse and touch x, y location
+// pick color any particular positionfrom main canvas
+const pickMainCanvasColor = (e, isClick = false) => {
+  if (!mouseClicking && !isMobile && !isClick) return;
 
   if (isMobile && isClick) {
-    location = {
+    MSLocation = {
       x: e.clientX - clrPkrOfstLeft, // touch x 
       y: e.clientY - clrPkrOfstTop // touch y
     }
   } else if (isMobile) {
-    console.log(1);
-    location = {
+    MSLocation = {
       x: e.touches[0].clientX - clrPkrOfstLeft, // touch x 
       y: e.touches[0].clientY - clrPkrOfstTop // touch y
     }
   } else {
-    location = {
+    MSLocation = {
       x: e.offsetX, // mouse x 
       y: e.offsetY // mouse y
     }
   }
 
-  let rgba = ctx.getImageData(Math.round(location.x), Math.round(location.y), 1, 1).data; 
-  if (rgba[3] < 1) return;
+  let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
+  if (!rgba[3]) return;
 
-  rgbColor = {
+  rgbaColor = {
     r: rgba[0],
     g: rgba[1],
     b: rgba[2],
   }
 
   // set location x andy to cursor position
-  root.style.setProperty('--cursor-x', `${location.x}px`);
-  root.style.setProperty('--cursor-y', `${location.y}px`);
-  const {r, g, b} = rgbColor;
-  root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
+  root.style.setProperty('--cursor-x', `${MSLocation.x}px`);
+  root.style.setProperty('--cursor-y', `${MSLocation.y}px`);
 
-
-  // console.log(rgbToHex(r, g, b));
+  setCanvasColor();
 }
 
 // mouse move event
 colorPick.addEventListener("mousedown", () => mouseClicking = true);
-colorPick.addEventListener("mouseup", () => mouseClicking = false);
-colorPick.addEventListener("mouseleave", () => mouseClicking = false);
-colorPick.addEventListener("mousemove", pickCanvasColor);
+document.body.addEventListener("mouseup", () => mouseClicking = false);
+colorPick.addEventListener("mousemove", pickMainCanvasColor);
 // mouse and touch click event
 colorPick.addEventListener("click", (e) => {
-  pickCanvasColor(e, true);
+  pickMainCanvasColor(e, true);
 });
 // touch move event
-colorPick.addEventListener("touchmove", pickCanvasColor);
+colorPick.addEventListener("touchmove", pickMainCanvasColor);
+
+
+
+const bsw = 30, bsh = mainCvsH; // brightness selector width and height
+const bc = new Canvas(choiceBright, bsw, bsh);
+
+const gradient = bc.createLinearGradient(0, 0, bsw, bsh)// create lenear gradient
+gradient.addColorStop(0, "#FFFFFF");
+gradient.addColorStop(1, "#000000");
+bc.fillStyle("#FFFFFF");
+bc.fillRect(0, 0, bsw, insert);
+bc.fillStyle(gradient);
+bc.fillRect(0, insert, bsw, bsh - insert);
+bc.fillStyle("#000000");
+bc.fillRect(0, bsh - insert, bsw, bsh);
+
+
+const briPkrOfstTop = colorBox.offsetTop + secn.offsetTop;
+
+// // pick color any particular position from brightness canvas
+const pickBriCanvasColor = (e, isClick = false) => {
+  if (!mouseClicking && !isMobile && !isClick) return;
+
+  if (isMobile && isClick) {
+    BSLocationY = e.clientY - briPkrOfstTop // touch y
+  } else if (isMobile) {
+    BSLocationY = e.touches[0].clientY - briPkrOfstTop // touch y
+  } else {
+    BSLocationY = e.offsetY // mouse y
+  }
+
+  let color = bc.getImageData(0, BSLocationY, 1, 1).data;
+  if (!color[3]) return;
+  bright = color[0];
+
+  //   // set location y to cursor position
+  root.style.setProperty('--cursor-by', `${BSLocationY}px`);
+  root.style.setProperty('--color-b', `${rgbToHex(bright, bright, bright)}`);
+
+  setCanvasColor();
+}
+
+// mouse move event
+choiceBright.addEventListener("mousedown", () => mouseClicking = true); 
+choiceBright.addEventListener("mousemove", pickBriCanvasColor);
+// mouse and touch click event
+choiceBright.addEventListener("click", (e) => {
+  pickBriCanvasColor(e, true);
+});
+// touch move event
+choiceBright.addEventListener("touchmove", pickBriCanvasColor);
+
+
+
+
+
+findColorLocation(0, 0, 0); 
+
+// find color 
+function findColorLocation(r, g, b) {
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  root.style.setProperty('--color', `${rgbToHex(r, g, b)}`); 
+ 
+  
+  for (let i = max; i >= min; i--) {
+    bright = i;
+    const px = setCanvasColor();
+    
+    for (let y = 0; y < mainCvsH; y++) {
+      for (let x = 0; x < mainCvsW; x++) {
+        const index = (y * mainCvsW + x) * 4;
+        if (!px[index + 3]) continue;
+
+        if (r == px[index] && g == px[index + 1] && b == px[index + 2]) {
+            root.style.setProperty('--cursor-x', `${x}px`);
+            root.style.setProperty('--cursor-y', `${y}px`);
+            root.style.setProperty('--color', `${rgbToHex(r, g, b)}`); 
+            console.log(x, y);
+          return;
+        }
+      }
+    } 
+  }
+}
+
+console.log("end");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -133,29 +251,29 @@ function choiceHslFun(e) {
 
 }
 
-hsl.forEach((h, i) => {
-  function setcolor() {
-    selectedIndex = i;
-    root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
-    currentColor = getRGB(hsl[selectedIndex].style.background);
-    // colorSetup(currentColor);
-    setCurrentColor();
-  }
-  h.addEventListener("click", setcolor);
-  h.addEventListener("touchstart", setcolor);
-  h.addEventListener("touchmove", setcolor);
-  h.addEventListener("touchend", setcolor);
+// hsl.forEach((h, i) => {
+//   function setcolor() {
+//     selectedIndex = i;
+//     root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
+//     currentColor = getRGB(hsl[selectedIndex].style.background);
+//     // colorSetup(currentColor);
+//     setCurrentColor();
+//   }
+//   h.addEventListener("click", setcolor);
+//   h.addEventListener("touchstart", setcolor);
+//   h.addEventListener("touchmove", setcolor);
+//   h.addEventListener("touchend", setcolor);
 
-  h.addEventListener("mouseenter", () => {
-    currentColor = getRGB(h.style.background);
-    // colorSetup(currentColor);
-  });
-  h.addEventListener("mouseleave", () => {
-    root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
-    currentColor = getRGB(hsl[selectedIndex].style.background);
-    // colorSetup(currentColor);
-  });
-})
+//   h.addEventListener("mouseenter", () => {
+//     currentColor = getRGB(h.style.background);
+//     // colorSetup(currentColor);
+//   });
+//   h.addEventListener("mouseleave", () => {
+//     root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
+//     currentColor = getRGB(hsl[selectedIndex].style.background);
+//     // colorSetup(currentColor);
+//   });
+// })
 
 const pick = document.querySelectorAll("pick");
 let mainSelect = 0;
@@ -178,7 +296,7 @@ pick.forEach((p, i) => {
 
 const hexColorCode = ID("hex-color-code");
 const hexFild = ID("h-c");
-const rgbColorCode = ID("rgb-color-code");
+const rgbaColorCode = ID("rgb-color-code");
 
 function setCurrentColor() {
   hexColor = rgbToHex(pick[mainSelect].style.background);
@@ -186,7 +304,7 @@ function setCurrentColor() {
   root.style.setProperty('--color', `#${hexColor}`);
 
   let rgb = getRGB(pick[mainSelect].style.background);
-  rgbColorCode.innerHTML = `<b>rgb(</b><p>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</p><b>)</b>`
+  rgbaColorCode.innerHTML = `<b>rgb(</b><p>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</p><b>)</b>`
 }
 
 const tost = ID("tost");
@@ -197,10 +315,10 @@ function copyText(str, ele) {
   document.body.appendChild(inp);
   inp.value = str;
   inp.select();
-  inp.setSelectionRange(0, 100000); 
+  inp.setSelectionRange(0, 100000);
   navigator.clipboard.writeText(str);
   document.body.removeChild(inp);
-  
+
   ele.classList.add("copy");
   tost.classList.add("active");
 
@@ -213,9 +331,9 @@ hexColorCode.addEventListener("click", () => {
   copyText(hx, hexColorCode);
 })
 
-rgbColorCode.addEventListener("click", () => {
-  let rgb = rgbColorCode.innerText.split("\n").join("");
-  copyText(rgb, rgbColorCode);
+rgbaColorCode.addEventListener("click", () => {
+  let rgb = rgbaColorCode.innerText.split("\n").join("");
+  copyText(rgb, rgbaColorCode);
 })
 
 
