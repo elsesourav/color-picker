@@ -24,7 +24,7 @@ let rgbaColor = {
 const mc = new Canvas(mainPicker, mainCvsW, mainCvsH); // main color picker canvas
 // mc.scale(0.65, 0.65); 
 let x = mainCvsW / 2, y = mainCvsH / 2; // hulf main canvas width height
-let radius = mainCvsW / 2, _1deg = toRadian(1.3);
+let radius = mainCvsW / 2, _1deg = toRadian(1.4);
 const insert = 5;
 
 
@@ -169,7 +169,7 @@ brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
 
 
 
-// findColorLocation(0, 0, 0);
+// findColorLocation(200, 200, 255);
 
 // find color 
 function findColorLocation(r, g, b) {
@@ -179,14 +179,22 @@ function findColorLocation(r, g, b) {
   root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
   for (let i = max; i >= min; i--) {
     bright = i;
-    const px = setCanvasColor();
+    const p = setCanvasColor();
 
     for (let y = 0; y < mainCvsH; y++) {
       for (let x = 0; x < mainCvsW; x++) {
-        const index = (y * mainCvsW + x) * 4;
-        if (!px[index + 3]) continue;
+        const k = (y * mainCvsW + x) * 4;
+        if (!p[k + 3]) continue;
 
-        if (r == px[index] && g == px[index + 1] && b == px[index + 2]) {
+        const e = 3;
+        // when r, g, b any one closer -3 and 3
+        if (
+          ((r >= p[k] - e && r <= p[k] + e) && g == p[k + 1] && b == p[k + 2]) ||
+          (r == p[k] && (g >= p[k + 1] - e && g <= p[k + 1] + e) && b == p[k + 2]) ||
+          (r == p[k] && g == p[k + 1] && (b >= p[k + 2] - e && b <= p[k + 2] + e))
+        ) { 
+          console.log(r, g, b);
+          console.log(p[k], p[k + 1], p[k + 2]);
           root.style.setProperty('--cursor-x', `${x}px`);
           root.style.setProperty('--cursor-y', `${y}px`);
           root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
