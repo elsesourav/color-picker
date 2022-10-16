@@ -20,7 +20,7 @@
   --bright-selecter-w: 8px;
   --brightness-picker-height: 0;
   --pad: 20px;
-  --gap: 15px;
+  --gap: 20px;
   --bright-selector-w: 30px;
 }
 ::selection{
@@ -72,9 +72,9 @@ main {
   width: 100%;
   height: 100%;
   gap: var(--gap);
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
+  display: grid;
+  place-items: center;
+  grid-template-rows: calc(var(--color-picker-radius) + 18px) var(--brightness-picker-height)  200px;
   overflow: hidden;
 }
 main #main-picker {
@@ -82,12 +82,11 @@ main #main-picker {
   width: var(--color-picker-radius);
   height: var(--color-picker-radius);
   display: grid;
-  margin: var(--gap);
   place-items: center;
   border-radius: 300px;
 }
 main #main-picker canvas {
-  border-radius: 300px;
+  border-radius: 100%;
   outline: solid 2px #ffffff;
   box-shadow: 0 0 3px #000000, 0 0 7px #000000, 0 0 15px #000000;
 }
@@ -144,7 +143,7 @@ main #main-picker::before {
 main #color-output-box {
   position: relative;
   width: 340px;
-  height: 240px;
+  height: 200px;
   border-radius: 12px;
   outline: solid 5px #222222;
   box-shadow: 0 0 3px #000000, 0 0 7px #000000, inset 0 0 3px #000000;

@@ -21,53 +21,39 @@ let rgbaColor = {
 
 //type of color: Name, rgb, hex, hsl, hwb, cmyk, Ncol;
 
-const mc = new Canvas(mainPicker, mainCvsW, mainCvsH); // main color picker canvas
-// mc.scale(0.65, 0.65); 
+const mc = new Canvas(mainPicker, mainCvsW, mainCvsH); // main color picker canvas 
 let x = mainCvsW / 2, y = mainCvsH / 2; // hulf main canvas width height
 let radius = mainCvsW / 2, _1deg = toRadian(1.4);
 const insert = 5;
+const divi = 1000;
+const delta = 1 / divi;
+const allColorImages = getImages();
 
-
-  // create hsl 0 to 360 deg all color 
-  for (let i = 0; i < 360; i++) {
-    const angle = toRadian(i);
-    mc.fillStyle(`hsl(${i}, 100%, 50%)`);
-    mc.moveTo(x, y);
-    mc.lineTo(x + radius * sin(angle), y + radius * cos(angle));
-    mc.lineTo(x + radius * sin(angle + _1deg), y + radius * cos(angle + _1deg));
-    mc.fill();
-  }
-
-  var imdata = mc.context.getImageData(0,0,mainCvsW,mainCvsH);
 
 setCanvasColor(); // first time set color auto
 
-function setCanvasColor() {
-  mc.context.putImageData( imdata, 0,0);
-  // creat brightness color
-  const gradient = mc.createRadialGradient(x, y, radius, x, y, 1); // create radial gradient
-  const divi = 1000;
-  const delta = 1 / divi;
-  for (let i = delta; i <= 1; i += delta) {
-    gradient.addColorStop(i, `rgba(${bright}, ${bright}, ${bright}, ${i})`);
-  }
-  mc.fillStyle(gradient);
-  mc.arc(x, y, radius - insert, 0, Math.PI * 2);
-  mc.fill();
+function setCanvasColor(needReturn = false) {
+  mc.putImageData(allColorImages[bright], 0, 0);
+  if (!needReturn) {
+    let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
+    if (!rgba[3]) return;
 
-  let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
+    rgbaColor = {
+      r: rgba[0],
+      g: rgba[1],
+      b: rgba[2],
+      a: rgba[3]
+    }
 
-  rgbaColor = {
-    r: rgba[0],
-    g: rgba[1],
-    b: rgba[2],
-    a: rgba[3]
+    const { r, g, b } = rgbaColor;
+    root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
+    // set location x andy to cursor position
+    root.style.setProperty('--cursor-x', `${MSLocation.x}px`);
+    root.style.setProperty('--cursor-y', `${MSLocation.y}px`);
   }
 
-  const { r, g, b } = rgbaColor;
-  root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
-
-  return mc.getImageData(0, 0, mainCvsW, mainCvsH).data;
+  if (needReturn)
+    return mc.getImageData(0, 0, mainCvsW, mainCvsH).data;
 }
 
 
@@ -95,19 +81,6 @@ const pickMainCanvasColor = (e, isClick = false) => {
       y: e.offsetY // mouse y
     }
   }
-
-  let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
-  if (!rgba[3]) return;
-
-  rgbaColor = {
-    r: rgba[0],
-    g: rgba[1],
-    b: rgba[2],
-  }
-
-  // set location x andy to cursor position
-  root.style.setProperty('--cursor-x', `${MSLocation.x}px`);
-  root.style.setProperty('--cursor-y', `${MSLocation.y}px`);
   setCanvasColor();
 }
 
@@ -170,42 +143,38 @@ brightnessPicker.addEventListener("click", (e) => {
 brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
 
 
-
-
-
-findColorLocation(200, 20, 255);
+findColorLocation(0, 1, 0);
 
 // find color 
 function findColorLocation(r, g, b) {
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
   for (let i = max; i >= min; i--) {
     bright = i;
-    const p = setCanvasColor();
+    const p = setCanvasColor(true);
 
     for (let y = 0; y < mainCvsH; y++) {
       for (let x = 0; x < mainCvsW; x++) {
         const k = (y * mainCvsW + x) * 4;
-        if (!p[k + 3]) continue;
+        try {
+          if (!p[k + 3]) continue;
 
-        const e = 3;
-        // when r, g, b any one closer -3 and 3
-        if (
-          ((r >= p[k] - e && r <= p[k] + e) && g == p[k + 1] && b == p[k + 2]) ||
-          (r == p[k] && (g >= p[k + 1] - e && g <= p[k + 1] + e) && b == p[k + 2]) ||
-          (r == p[k] && g == p[k + 1] && (b >= p[k + 2] - e && b <= p[k + 2] + e))
-        ) { 
-          console.log(r, g, b);
-          console.log(p[k], p[k + 1], p[k + 2]);
-          root.style.setProperty('--cursor-x', `${x}px`);
-          root.style.setProperty('--cursor-y', `${y}px`);
-          root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
-          console.log(x, y);
-          console.log(i);
-          return;
-        }
+          const e = 5;
+          // when r, g, b any one closer -3 and 3
+          if (
+            ((r >= p[k] - e && r <= p[k] + e) && g == p[k + 1] && b == p[k + 2]) ||
+            (r == p[k] && (g >= p[k + 1] - e && g <= p[k + 1] + e) && b == p[k + 2]) ||
+            (r == p[k] && g == p[k + 1] && (b >= p[k + 2] - e && b <= p[k + 2] + e))
+          ) {
+            root.style.setProperty('--cursor-x', `${x}px`);
+            root.style.setProperty('--cursor-y', `${y}px`);
+            const dx = ((mainCvsW / 255) * i).toFixed(2);
+            root.style.setProperty('--cursor-bx', `${bsw - dx}px`);
+            root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
+            return;
+          }
+        } catch (e) { }
       }
     }
   }

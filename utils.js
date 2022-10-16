@@ -49,6 +49,7 @@ class Canvas {
 
   // for image 
   getImageData = (sx, sy, sw, sh) => this.context.getImageData(sx, sy, sw, sh);
+  putImageData = (image, dx, dy) => this.context.putImageData(image, dx, dy);
 }
 
 
