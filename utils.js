@@ -24,10 +24,10 @@ class Canvas {
   scale = (x, y) => this.context.scale(x, y);
 
   createRadialGradient = (x1, y1, r1, x2, y2, r2) =>
-    this.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+  this.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
   createLinearGradient = (x1, y1, x2, y2) =>
-    this.context.createLinearGradient(x1, y1, x2, y2);
-
+  this.context.createLinearGradient(x1, y1, x2, y2);
+  
   arc = (x, y, radius, startAngle, endAngle, anti) => {
     this.context.beginPath();
     this.context.arc(x, y, radius, startAngle, endAngle, anti);
@@ -79,12 +79,14 @@ const map = (point, start, end, min, max) => {
 
 
 let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
+!isMobile && root.style.setProperty('--cursor', `pointer`);
 // isMobile = true;
+
 function rgbToHsl(r, g, b) {
   r /= 255, g /= 255, b /= 255;
   let max = Math.max(r, g, b), min = Math.min(r, g, b);
   let h, s, l = (max + min) / 2;
-
+  
   if (max == min) {
     h = s = 0; // achromatic
   } else {

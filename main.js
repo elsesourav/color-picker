@@ -138,11 +138,14 @@ const pickBriCanvasColor = (e, isClick = false) => {
   }
 
   const is = BSLocationX <= bsw && BSLocationX >= 0;
-  if (!is) return;
+  if(!is) {
+    BSLocationX > bsw && (BSLocationX = bsw);
+    BSLocationX < 0 && (BSLocationX = 0);
+  }
 
   bright = bc.getImageData(BSLocationX, 0, 1, 1).data[0];
 
-  //   // set location y to cursor position
+  // set location y to cursor position
   root.style.setProperty('--cursor-bx', `${BSLocationX}px`);
   root.style.setProperty('--color-b', `${rgbToHex(bright, bright, bright)}`);
 
@@ -205,159 +208,3 @@ function findColorLocation(r, g, b) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function choiceHslFun(e) {
-  // console.log(e.target.clientHeight)  
-  // console.log(e.layerY) 
-
-
-}
-
-// hsl.forEach((h, i) => {
-//   function setcolor() {
-//     selectedIndex = i;
-//     root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
-//     currentColor = getRGB(hsl[selectedIndex].style.background);
-//     // colorSetup(currentColor);
-//     setCurrentColor();
-//   }
-//   h.addEventListener("click", setcolor);
-//   h.addEventListener("touchstart", setcolor);
-//   h.addEventListener("touchmove", setcolor);
-//   h.addEventListener("touchend", setcolor);
-
-//   h.addEventListener("mouseenter", () => {
-//     currentColor = getRGB(h.style.background);
-//     // colorSetup(currentColor);
-//   });
-//   h.addEventListener("mouseleave", () => {
-//     root.style.setProperty('--selecter-top', `${hsl[selectedIndex].offsetTop}px`);
-//     currentColor = getRGB(hsl[selectedIndex].style.background);
-//     // colorSetup(currentColor);
-//   });
-// })
-
-// const pick = document.querySelectorAll("pick");
-// let mainSelect = 0;
-// let hexColor = "FF0000";
-
-// pick.forEach((p, i) => {
-//   function setcolor() {
-//     mainSelect = i;
-//     root.style.setProperty('--main-selecter-top', `${pick[mainSelect].offsetTop}px`);
-//     root.style.setProperty('--main-selecter-left', `${pick[mainSelect].offsetLeft}px`);
-//     root.style.setProperty('--main-selecter-width', `${pick[mainSelect].clientWidth}px`);
-//     root.style.setProperty('--main-selecter-height', `${pick[mainSelect].clientHeight}px`);
-//     setCurrentColor();
-//   }
-//   p.addEventListener("click", setcolor);
-//   p.addEventListener("touchstart", setcolor);
-//   p.addEventListener("touchend", setcolor);
-
-// })
-
-// const hexColorCode = ID("hex-color-code");
-// const hexFild = ID("h-c");
-// const rgbaColorCode = ID("rgb-color-code");
-
-// function setCurrentColor() {
-//   hexColor = rgbToHex(pick[mainSelect].style.background);
-//   hexFild.innerHTML = hexColor;
-//   root.style.setProperty('--color', `#${hexColor}`);
-
-//   let rgb = getRGB(pick[mainSelect].style.background);
-//   rgbaColorCode.innerHTML = `<b>rgb(</b><p>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</p><b>)</b>`
-// }
-
-// const tost = ID("tost");
-
-// function copyText(str, ele) {
-//   const inp = document.createElement("input");
-//   inp.type = "text";
-//   document.body.appendChild(inp);
-//   inp.value = str;
-//   inp.select();
-//   inp.setSelectionRange(0, 100000);
-//   navigator.clipboard.writeText(str);
-//   document.body.removeChild(inp);
-
-//   ele.classList.add("copy");
-//   tost.classList.add("active");
-
-//   setTimeout(() => ele.classList.remove("copy"), 1000);
-//   setTimeout(() => tost.classList.remove("active"), 3000);
-// }
-
-// hexColorCode.addEventListener("click", () => {
-//   let hx = hexColorCode.innerText;
-//   copyText(hx, hexColorCode);
-// })
-
-// rgbaColorCode.addEventListener("click", () => {
-//   let rgb = rgbaColorCode.innerText.split("\n").join("");
-//   copyText(rgb, rgbaColorCode);
-// })
-
-
-
-// function colorSetup(ary) {
-//   const r = ary[0], g = ary[1], b = ary[2];
-//   const getCol = (x, index) => Math.round((x / (max - 1)) * index);
-//   const getRow = (x, index) => Math.round(((255 - x) / (max - 1)) * index);
-//   const picker = document.querySelectorAll("pick");
-
-//   for (let i = 0; i < max; i++) {
-//     let nr = getRow(r, i) + r;
-//     let ng = getRow(g, i) + g;
-//     let nb = getRow(b, i) + b;
-
-//     for (let j = 0; j < max; j++) {
-//       let rn = nr - getCol(nr, j);
-//       let gn = ng - getCol(ng, j);
-//       let bn = nb - getCol(nb, j);
-//       picker[(max * i) + j].style.background = `rgb(${rn}, ${gn}, ${bn})`;
-//     }
-//   }
-
-// }
