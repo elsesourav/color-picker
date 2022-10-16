@@ -77,6 +77,7 @@ const map = (point, start, end, min, max) => {
   return ((max - min) * per) + min;
 }
 
+
 let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
 // isMobile = true;
 function rgbToHsl(r, g, b) {

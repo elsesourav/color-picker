@@ -56,7 +56,6 @@ body {
   padding-top: 10px;
   text-align: right;
   font-family: Arial, Helvetica, sans-serif;
-  color: #ffffff;
 }
 canvas {
   background: #cccccc;
@@ -75,7 +74,6 @@ main {
   display: grid;
   place-items: center;
   grid-template-rows: calc(var(--color-picker-radius) + 18px) var(--brightness-picker-height)  200px;
-  overflow: hidden;
 }
 main #main-picker {
   position: relative;
@@ -84,6 +82,7 @@ main #main-picker {
   display: grid;
   place-items: center;
   border-radius: 300px;
+  cursor: pointer;
 }
 main #main-picker canvas {
   border-radius: 100%;
@@ -96,26 +95,12 @@ main #brightness-picker {
   width: var(--color-picker-radius);
   height: var(--brightness-picker-height);
   border-radius: 5px;
+  cursor: pointer;
 }
 main #brightness-picker canvas {
   border-radius: 5px;
   outline: solid 2px #ffffff;
   box-shadow: 0 0 3px #000000, 0 0 7px #000000;
-}
-main #main-picker::before,
-main #brightness-picker::before {
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: 120%;
-  top: -10%;
-  z-index: 10;
-}
-main #main-picker::before {
-  height: 106%;
-  width: 106%;
-  left: -3%;
-  top: -3%;
 }
 #main-selecter {
   position: absolute;
@@ -165,9 +150,10 @@ main #color-output-box {
 .color-name {
   position: relative;
   grid-area: nm;
-  color: #ffffff;
+  color: var(--color);
   font-size: 0.7rem;
   font-family: cursive;
+  font-weight: 900;
   display: flex;
   align-items: center;
   padding-left: 8px;
@@ -178,8 +164,23 @@ main #color-output-box {
   margin-top: 2px;
   grid-area: in;
 }
+#hex-in-fild {
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+}
+#hex-in-fild #has {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-weight: 900;
+  color: var(--color);
+  height: 100%;
+}
 #hex-input {
+  width: 85%;
+  right: 0;
   letter-spacing: 2px;
+  font-weight: 600;
 }
 input {
   position: absolute;

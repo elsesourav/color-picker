@@ -1,7 +1,6 @@
 const secn = ID("secn");
 const colorBox = ID("color-box");
 const colorPick = ID("color-pick");
-const mainSelected = ID("main-selected");
 const choiceBright = ID("choice-bright");
 
 const mainPicker = ID("main-picker");
@@ -11,7 +10,7 @@ const brightnessSelecter = ID("brightness-selecter");
 const main = document.querySelector("main");
 
 let bright = 255;
-let MSLocation = { x: mainCvsW / 2, y: mainCvsH / 2 }; // main selector location mouse and touch x, y
+let vector = { x: mainCvsW / 2, y: mainCvsH / 2 }; // main selector location mouse and touch x, y
 let BSLocationX = 0; // brightness selector location mouse and touch y
 let rgbaColor = {
   r: 255,
@@ -32,10 +31,12 @@ const allColorImages = getImages();
 
 setCanvasColor(); // first time set color auto
 
-function setCanvasColor(needReturn = false) {
-  mc.putImageData(allColorImages[bright], 0, 0);
+function setCanvasColor(needReturn = false, isDrawImage = false) {
+  if (isDrawImage)
+    mc.putImageData(allColorImages[bright], 0, 0);
+
   if (!needReturn) {
-    let rgba = mc.getImageData(MSLocation.x, MSLocation.y, 1, 1).data;
+    let rgba = mc.getImageData(vector.x, vector.y, 1, 1).data;
     if (!rgba[3]) return;
 
     rgbaColor = {
@@ -48,8 +49,8 @@ function setCanvasColor(needReturn = false) {
     const { r, g, b } = rgbaColor;
     root.style.setProperty('--color', `${rgbToHex(r, g, b)}`);
     // set location x andy to cursor position
-    root.style.setProperty('--cursor-x', `${MSLocation.x}px`);
-    root.style.setProperty('--cursor-y', `${MSLocation.y}px`);
+    root.style.setProperty('--cursor-x', `${vector.x}px`);
+    root.style.setProperty('--cursor-y', `${vector.y}px`);
   }
 
   if (needReturn)
@@ -57,48 +58,65 @@ function setCanvasColor(needReturn = false) {
 }
 
 
-let mouseClicking = false;
-const clrPkrOfstLeft = main.offsetLeft + mainPicker.offsetLeft;
-const clrPkrOfstTop = main.offsetTop + mainPicker.offsetTop;
+let clrPkrOfstLeft = main.offsetLeft + mainPicker.offsetLeft;
+let clrPkrOfstTop = main.offsetTop + mainPicker.offsetTop;
+let mainOffsetLeft = main.offsetLeft + brightnessPicker.offsetLeft;
 
+addEventListener("resize", () => {
+  clrPkrOfstLeft = main.offsetLeft + mainPicker.offsetLeft;
+  clrPkrOfstTop = main.offsetTop + mainPicker.offsetTop;
+  mainOffsetLeft = main.offsetLeft + brightnessPicker.offsetLeft;
+})
+
+
+let mainCvsClicking = false;
 // pick color any particular positionfrom main canvas
 const pickMainCanvasColor = (e, isClick = false) => {
-  if (!mouseClicking && !isMobile && !isClick) return;
+  if (!mainCvsClicking && !isMobile && !isClick) return;
 
-  if (isMobile && isClick) {
-    MSLocation = {
-      x: e.clientX - clrPkrOfstLeft, // touch x 
-      y: e.clientY - clrPkrOfstTop // touch y
-    }
-  } else if (isMobile) {
-    MSLocation = {
-      x: e.touches[0].clientX - clrPkrOfstLeft, // touch x 
-      y: e.touches[0].clientY - clrPkrOfstTop // touch y
-    }
+  if (isMobile && !isClick) {
+    vector.x = e.touches[0].clientX - clrPkrOfstLeft; // touch x 
+    vector.y = e.touches[0].clientY - clrPkrOfstTop // touch y
   } else {
-    MSLocation = {
-      x: e.offsetX, // mouse x 
-      y: e.offsetY // mouse y
-    }
+    vector.x = e.clientX - clrPkrOfstLeft; // touch x 
+    vector.y = e.clientY - clrPkrOfstTop // touch y
   }
+
+  let y = vector.y - radius;
+  let x = vector.x - radius;
+
+  const hipotanis = Math.sqrt(y * y + x * x);
+  const angle = Math.atan2(y, x);
+
+  if (hipotanis < 150) {
+    root.style.setProperty('--cursor-x', `${vector.x}px`);
+    root.style.setProperty('--cursor-y', `${vector.y}px`);
+  } else {
+    root.style.setProperty('--cursor-x', `${cos(angle) * radius + radius}px`);
+    root.style.setProperty('--cursor-y', `${sin(angle) * radius + radius}px`);
+  }
+
   setCanvasColor();
 }
 
 // mouse move event
-mainPicker.addEventListener("mousedown", () => mouseClicking = true);
-document.body.addEventListener("mouseup", () => mouseClicking = false);
-mainPicker.addEventListener("mousemove", pickMainCanvasColor);
+mainPicker.addEventListener("mousedown", () => mainCvsClicking = true);
+document.body.addEventListener("mousemove", pickMainCanvasColor);
+document.body.addEventListener("mouseup", () => mainCvsClicking = false);
 // mouse and touch click event
 mainPicker.addEventListener("click", (e) => {
   pickMainCanvasColor(e, true);
 });
 // touch move event
-mainPicker.addEventListener("touchmove", pickMainCanvasColor);
+mainPicker.addEventListener("touchstart", () => mainCvsClicking = true);
+document.body.addEventListener("touchmove", pickMainCanvasColor);
+document.body.addEventListener("touchend",() => mainCvsClicking = false);
 
 
 
 const bsw = mainCvsW, bsh = 25; // brightness selector width and height
 const bc = new Canvas(brightnessPicker, bsw, bsh);
+let brightCvsClicking = false;
 
 root.style.setProperty('--brightness-picker-height', `${bsh}px`);
 const gradient = bc.createLinearGradient(0, 0, bsw, bsh)// create lenear gradient
@@ -108,42 +126,48 @@ bc.fillStyle(gradient);
 bc.fillRect(0, 0, bsw, bsh);
 
 
-const mainOffsetLeft = main.offsetLeft + brightnessPicker.offsetLeft;
 
 // // pick color any particular position from brightness canvas
 const pickBriCanvasColor = (e, isClick = false) => {
-  if (!mouseClicking && !isMobile && !isClick) return;
-  if (isMobile && isClick) {
-    BSLocationX = e.clientX - mainOffsetLeft // touch y
-  } else if (isMobile) {
+  if (!brightCvsClicking && !isMobile && !isClick) return;
+  
+  if (isMobile && !isClick) {
     BSLocationX = e.touches[0].clientX - mainOffsetLeft // touch y
   } else {
-    BSLocationX = e.offsetX // mouse y
+    BSLocationX = e.clientX - mainOffsetLeft // touch y
   }
 
-  let color = bc.getImageData(BSLocationX, 0, 1, 1).data;
-  if (!color[3]) return;
-  bright = color[0];
+  const is = BSLocationX <= bsw && BSLocationX >= 0;
+  if (!is) return;
+
+  bright = bc.getImageData(BSLocationX, 0, 1, 1).data[0];
 
   //   // set location y to cursor position
   root.style.setProperty('--cursor-bx', `${BSLocationX}px`);
   root.style.setProperty('--color-b', `${rgbToHex(bright, bright, bright)}`);
 
-  setCanvasColor();
+  setCanvasColor(false, true);
 }
 
 // mouse move event
-brightnessPicker.addEventListener("mousedown", () => mouseClicking = true);
-brightnessPicker.addEventListener("mousemove", pickBriCanvasColor);
+brightnessPicker.addEventListener("mousedown", () => brightCvsClicking = true);
+document.body.addEventListener("mousemove", pickBriCanvasColor);
+document.body.addEventListener("mouseup", () => brightCvsClicking = false);
 // mouse and touch click event
 brightnessPicker.addEventListener("click", (e) => {
   pickBriCanvasColor(e, true);
 });
 // touch move event
-brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
+brightnessPicker.addEventListener("touchstart", () => brightCvsClicking = true);
+document.body.addEventListener("touchmove", pickBriCanvasColor);
+document.body.addEventListener("touchend",() => brightCvsClicking = false);
 
 
-findColorLocation(0, 1, 0);
+
+
+
+
+// findColorLocation(0, 1, 0);
 
 // find color 
 function findColorLocation(r, g, b) {
@@ -152,7 +176,7 @@ function findColorLocation(r, g, b) {
   const min = Math.min(r, g, b);
   for (let i = max; i >= min; i--) {
     bright = i;
-    const p = setCanvasColor(true);
+    const p = setCanvasColor(true, true);
 
     for (let y = 0; y < mainCvsH; y++) {
       for (let x = 0; x < mainCvsW; x++) {
