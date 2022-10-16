@@ -18,6 +18,7 @@
   --cursor-bx: 0px;
   --main-selecter-radius: 25px;
   --bright-selecter-w: 8px;
+  --brightness-picker-width: 0;
   --brightness-picker-height: 0;
   --pad: 20px;
   --gap: 20px;
@@ -93,7 +94,7 @@ main #main-picker canvas {
 
 main #brightness-picker {
   position: relative;
-  width: var(--color-picker-radius);
+  width: var(--brightness-picker-width);
   height: var(--brightness-picker-height);
   border-radius: 5px;
   cursor: var(--cursor);

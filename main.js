@@ -18,6 +18,8 @@ let rgbaColor = {
   b: 255,
 }
 
+
+
 //type of color: Name, rgb, hex, hsl, hwb, cmyk, Ncol;
 
 const mc = new Canvas(mainPicker, mainCvsW, mainCvsH); // main color picker canvas 
@@ -26,14 +28,35 @@ let radius = mainCvsW / 2, _1deg = toRadian(1.4);
 const insert = 5;
 const divi = 1000;
 const delta = 1 / divi;
-const allColorImages = getImages();
+
+// create hsl 0 to 360 deg all color 
+for (let i = 0; i < 360; i++) {
+  const angle = toRadian(i);
+  mc.fillStyle(`hsl(${i}, 100%, 50%)`);
+  mc.moveTo(x, y);
+  mc.lineTo(x + radius * sin(angle), y + radius * cos(angle));
+  mc.lineTo(x + radius * sin(angle + _1deg), y + radius * cos(angle + _1deg));
+  mc.fill();
+}
+const imdata = mc.getImageData(0, 0, mainCvsW, mainCvsH);
 
 
-setCanvasColor(); // first time set color auto
+setCanvasColor(false, true); // first time set color auto
 
 function setCanvasColor(needReturn = false, isDrawImage = false) {
-  if (isDrawImage)
-    mc.putImageData(allColorImages[bright], 0, 0);
+  if (isDrawImage) {
+    mc.clearRect();
+    mc.putImageData(imdata, 0, 0);
+    // creat brightness color
+    const gradient = mc.createRadialGradient(x, y, radius, x, y, 1); // create radial gradient
+    for (let i = delta; i <= 1; i += delta) {
+      gradient.addColorStop(i, `rgba(${bright}, ${bright}, ${bright}, ${i})`);
+    }
+    mc.fillStyle(gradient);
+    mc.arc(x, y, radius - insert, 0, Math.PI * 2);
+    mc.fill();
+  }
+  
 
   if (!needReturn) {
     let rgba = mc.getImageData(vector.x, vector.y, 1, 1).data;
@@ -51,6 +74,8 @@ function setCanvasColor(needReturn = false, isDrawImage = false) {
     // set location x andy to cursor position
     root.style.setProperty('--cursor-x', `${vector.x}px`);
     root.style.setProperty('--cursor-y', `${vector.y}px`);
+
+
   }
 
   if (needReturn)
@@ -107,15 +132,16 @@ mainPicker.addEventListener("click", (e) => {
 // touch move event
 mainPicker.addEventListener("touchstart", () => mainCvsClicking = true);
 mainPicker.addEventListener("touchmove", pickMainCanvasColor);
-document.body.addEventListener("touchend",() => mainCvsClicking = false);
+document.body.addEventListener("touchend", () => mainCvsClicking = false);
 
 
 
-const bsw = mainCvsW, bsh = 25; // brightness selector width and height
+const bsw = mainCvsW - 20, bsh = 25; // brightness selector width and height
 const bc = new Canvas(brightnessPicker, bsw, bsh);
 let brightCvsClicking = false;
 
 root.style.setProperty('--brightness-picker-height', `${bsh}px`);
+root.style.setProperty('--brightness-picker-width', `${bsw}px`);
 const gradient = bc.createLinearGradient(0, 0, bsw, bsh)// create lenear gradient
 gradient.addColorStop(0, "#FFFFFF");
 gradient.addColorStop(1, "#000000");
@@ -127,7 +153,7 @@ bc.fillRect(0, 0, bsw, bsh);
 // // pick color any particular position from brightness canvas
 const pickBriCanvasColor = (e, isClick = false) => {
   if (!brightCvsClicking && !isMobile && !isClick) return;
-  
+
   if (isMobile && !isClick) {
     BSLocationX = e.touches[0].clientX - mainOffsetLeft // touch y
   } else {
@@ -135,7 +161,7 @@ const pickBriCanvasColor = (e, isClick = false) => {
   }
 
   const is = BSLocationX <= bsw && BSLocationX >= 0;
-  if(!is) {
+  if (!is) {
     BSLocationX > bsw && (BSLocationX = bsw);
     BSLocationX < 0 && (BSLocationX = 0);
   }
@@ -160,7 +186,7 @@ brightnessPicker.addEventListener("click", (e) => {
 // touch move event
 brightnessPicker.addEventListener("touchstart", () => brightCvsClicking = true);
 brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
-document.body.addEventListener("touchend",() => brightCvsClicking = false);
+document.body.addEventListener("touchend", () => brightCvsClicking = false);
 
 
 
