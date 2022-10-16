@@ -12,22 +12,32 @@
 :root {
   --color: #ffffff;
   --color-b: #ffffff;
-  --cursor-x: 180px;
-  --cursor-y: 180px;
+  --cursor-x: 0;
+  --cursor-y: 0;
+  --color-picker-radius: 0;
   --cursor-bx: 0px;
   --main-selecter-radius: 25px;
-  --bright-selecter-h: 8px;
+  --bright-selecter-w: 8px;
+  --brightness-picker-height: 0;
   --pad: 20px;
   --gap: 15px;
   --bright-selector-w: 30px;
+}
+::selection{
+  background: var(--color);
+}
+
+::-moz-selection{
+  background: var(--color);
 }
 body {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .background {
   background: #222222;
@@ -39,9 +49,12 @@ body {
   background-position: 0 0, 2px 0, 2px -2px, 0px 2px;
 }
 #me {
-  position: fixed;
-  right: 10px;
-  top: 10px;
+  position: relative;
+  height: 40px; 
+  width: 100%;
+  padding-right: 10px;
+  padding-top: 10px;
+  text-align: right;
   font-family: Arial, Helvetica, sans-serif;
   color: #ffffff;
 }
@@ -58,18 +71,18 @@ main {
   position: relative;
   width: 100%;
   height: 100%;
-  gap: 15px;
+  gap: var(--gap);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: column; 
   align-items: center;
   overflow: hidden;
 }
 main #main-picker {
   position: relative;
-  width: 360px;
-  height: 360px;
+  width: var(--color-picker-radius);
+  height: var(--color-picker-radius);
   display: grid;
+  margin: var(--gap);
   place-items: center;
   border-radius: 300px;
 }
@@ -81,8 +94,8 @@ main #main-picker canvas {
 
 main #brightness-picker {
   position: relative;
-  width: 360px;
-  height: 30px;
+  width: var(--color-picker-radius);
+  height: var(--brightness-picker-height);
   border-radius: 5px;
 }
 main #brightness-picker canvas {
@@ -113,72 +126,80 @@ main #main-picker::before {
   top: calc(var(--cursor-y) - var(--main-selecter-radius) / 2);
   border: solid 2px #ffffff;
   background: var(--color);
-  box-shadow: 0 0 1px #000000, 0 0 3px #000000, 0 0 5px #000000;
+  outline: solid 2px #00000066;
   border-radius: 100%;
 }
 #brithtness-selecter {
   position: absolute;
   width: 15px;
-  height: 120%;
+  height: 140%;
   border-radius: 3px;
-  top: -10%;
-  left: calc(var(--cursor-bx) - var(--bright-selecter-h) / 2);
-  outline: solid 2px #ffffff;
+  top: -20%;
+  left: calc(var(--cursor-bx) - var(--bright-selecter-w) / 2);
+  border: solid 2px #ffffff;
   background: var(--color-b);
-  box-shadow: 0 0 1px #000000, 0 0 3px #000000;
+  outline: solid 2px #00000066;
   z-index: 2;
 }
 main #color-output-box {
   position: relative;
   width: 340px;
-  height: 180px;
-  border-radius: 13px;
+  height: 240px;
+  border-radius: 12px;
   outline: solid 5px #222222;
-  box-shadow: 0 0 3px #000000, 0 0 7px #000000;
+  box-shadow: 0 0 3px #000000, 0 0 7px #000000, inset 0 0 3px #000000;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 2fr 2fr 2fr;
   background: var(--color);
 }
 .color-output {
   position: relative;
-  margin: 4px;
+  margin: 5px;
   box-shadow: inset 0 0 2px #000000, 1px 1px 3px #000000;
   border-radius: 10px;
   display: grid;
   grid-template-rows: 3fr 5fr;
   grid-template-areas: 'nm nm nm cpy'
-                       'in in in cpy';
+                       'in in in in';
 }
 .color-name {
   position: relative;
-  width: 100%;
-  height: 100%;
   grid-area: nm;
-  height: calc(100% - 1px);
   color: #ffffff;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-family: cursive;
-  text-align: center;
-  display: grid;
-  place-items: center;
-}
-.color-name::before {
-  position: absolute;
-  content: '';
-  width: 60px;
-  height: 1px;
-  bottom: 0;
-  background: #ffffff;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
 }
 .input {
   position: relative;
-  width: 100%;
-  height: 100%;
+  margin: 5px;
+  margin-top: 2px;
   grid-area: in;
 }
 #hex-input {
   letter-spacing: 2px;
+}
+input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  outline: none;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 1px 6px;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  box-shadow: inset 1px 1px 2px #000000, inset -1px -1px 2px #282828;
+  background: #181818;
+  color: #ffffff;
+  caret-color: var(--color);
 }
 .copy-icon {
   position: relative;
@@ -186,24 +207,7 @@ main #color-output-box {
   height: 100%;
   grid-area: cpy;
 }
-input {
-  position: absolute;
-  width: 128px;
-  height: 100%;
-  background: transparent;
-  white-space: nowrap;
-  -o-text-overflow: ellipsis;
-  -ms-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  outline: none;
-  border: none;
-  font-size: 1rem;
-  padding: 5px 15px;
-  padding-right: 5px;
-  color: #ffffff;
-  caret-color: var(--color);
-}
+
 
 /* main section #color-box { */
 /* position: relative; */
@@ -211,13 +215,13 @@ input {
 /* height: 100%; */
 /* display: grid; */
 /* gap: var(--gap); */
-/* grid-template-columns: 360px var(--bright-selector-w); */
+/* grid-template-columns: var(--color-picker-radius) var(--bright-selector-w); */
 /* } */
 /* #color-picker, */
 /* #color-choice, */
 /* #copy-color-section { */
 /* position: relative; */
-/* height: 360px; */
+/* height: var(--color-picker-radius); */
 /* } */
 /* #choice-bright { */
 /* position: relative; */
@@ -231,7 +235,7 @@ input {
 /* #color-pick { */
 /* position: relative; */
 /* width: 100%; */
-/* height: 360px; */
+/* height: var(--color-picker-radius); */
 /* border-radius: 100%; */
 /* display: grid; */
 /* place-items: center; */
@@ -256,10 +260,10 @@ input {
 /* #brithtness-selecter { */
 /* position: absolute; */
 /* width: 120%; */
-/* height: var(--bright-selecter-h); */
+/* height: var(--bright-selecter-w); */
 /* border-radius: 3px; */
 /* left: -10%; */
-/* top: calc(var(--cursor-bx) - var(--bright-selecter-h) / 2); */
+/* top: calc(var(--cursor-bx) - var(--bright-selecter-w) / 2); */
 /* outline: solid 2px #ffffff; */
 /* background: var(--color-b); */
 /* box-shadow: 0 0 1px #000000, 0 0 3px #000000; */

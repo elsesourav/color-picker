@@ -1,7 +1,8 @@
 "use strict"
 const root = document.querySelector(":root");
-const mainCvsW = 360;
-const mainCvsH = 360;
+const mainCvsW = 300;
+const mainCvsH = 300;
+root.style.setProperty('--color-picker-radius', `${mainCvsH}px`);
 
 class Canvas {
   constructor(appendElement, width, height) {

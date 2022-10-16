@@ -28,9 +28,6 @@ let radius = mainCvsW / 2, _1deg = toRadian(1.4);
 const insert = 5;
 
 
-setCanvasColor(); // first time set color auto
-
-function setCanvasColor() {
   // create hsl 0 to 360 deg all color 
   for (let i = 0; i < 360; i++) {
     const angle = toRadian(i);
@@ -41,6 +38,12 @@ function setCanvasColor() {
     mc.fill();
   }
 
+  var imdata = mc.context.getImageData(0,0,mainCvsW,mainCvsH);
+
+setCanvasColor(); // first time set color auto
+
+function setCanvasColor() {
+  mc.context.putImageData( imdata, 0,0);
   // creat brightness color
   const gradient = mc.createRadialGradient(x, y, radius, x, y, 1); // create radial gradient
   const divi = 1000;
@@ -121,9 +124,10 @@ mainPicker.addEventListener("touchmove", pickMainCanvasColor);
 
 
 
-const bsw = mainCvsW, bsh = 30; // brightness selector width and height
+const bsw = mainCvsW, bsh = 25; // brightness selector width and height
 const bc = new Canvas(brightnessPicker, bsw, bsh);
 
+root.style.setProperty('--brightness-picker-height', `${bsh}px`);
 const gradient = bc.createLinearGradient(0, 0, bsw, bsh)// create lenear gradient
 gradient.addColorStop(0, "#FFFFFF");
 gradient.addColorStop(1, "#000000");
@@ -131,7 +135,7 @@ bc.fillStyle(gradient);
 bc.fillRect(0, 0, bsw, bsh);
 
 
-const mainOffsetLeft = main.offsetLeft;
+const mainOffsetLeft = main.offsetLeft + brightnessPicker.offsetLeft;
 
 // // pick color any particular position from brightness canvas
 const pickBriCanvasColor = (e, isClick = false) => {
@@ -169,7 +173,7 @@ brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
 
 
 
-// findColorLocation(200, 200, 255);
+findColorLocation(200, 20, 255);
 
 // find color 
 function findColorLocation(r, g, b) {
