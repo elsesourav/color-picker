@@ -80,7 +80,7 @@ const map = (point, start, end, min, max) => {
 
 let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
 !isMobile && root.style.setProperty('--cursor', `pointer`);
-// isMobile = true;
+isMobile = true;
 
 function rgbToHsl(r, g, b) {
   r /= 255, g /= 255, b /= 255;

@@ -88,12 +88,9 @@ const pickMainCanvasColor = (e, isClick = false) => {
   const hipotanis = Math.sqrt(y * y + x * x);
   const angle = Math.atan2(y, x);
 
-  if (hipotanis < 150) {
-    root.style.setProperty('--cursor-x', `${vector.x}px`);
-    root.style.setProperty('--cursor-y', `${vector.y}px`);
-  } else {
-    root.style.setProperty('--cursor-x', `${cos(angle) * radius + radius}px`);
-    root.style.setProperty('--cursor-y', `${sin(angle) * radius + radius}px`);
+  if (hipotanis >= 150) {
+    vector.x = cos(angle) * radius + radius;
+    vector.y = sin(angle) * radius + radius;
   }
 
   setCanvasColor();
@@ -109,7 +106,7 @@ mainPicker.addEventListener("click", (e) => {
 });
 // touch move event
 mainPicker.addEventListener("touchstart", () => mainCvsClicking = true);
-document.body.addEventListener("touchmove", pickMainCanvasColor);
+mainPicker.addEventListener("touchmove", pickMainCanvasColor);
 document.body.addEventListener("touchend",() => mainCvsClicking = false);
 
 
@@ -162,7 +159,7 @@ brightnessPicker.addEventListener("click", (e) => {
 });
 // touch move event
 brightnessPicker.addEventListener("touchstart", () => brightCvsClicking = true);
-document.body.addEventListener("touchmove", pickBriCanvasColor);
+brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
 document.body.addEventListener("touchend",() => brightCvsClicking = false);
 
 
