@@ -24,10 +24,10 @@ class Canvas {
   scale = (x, y) => this.context.scale(x, y);
 
   createRadialGradient = (x1, y1, r1, x2, y2, r2) =>
-  this.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
+    this.context.createRadialGradient(x1, y1, r1, x2, y2, r2);
   createLinearGradient = (x1, y1, x2, y2) =>
-  this.context.createLinearGradient(x1, y1, x2, y2);
-  
+    this.context.createLinearGradient(x1, y1, x2, y2);
+
   arc = (x, y, radius, startAngle, endAngle, anti) => {
     this.context.beginPath();
     this.context.arc(x, y, radius, startAngle, endAngle, anti);
@@ -86,7 +86,7 @@ function rgbToHsl(r, g, b) {
   r /= 255, g /= 255, b /= 255;
   let max = Math.max(r, g, b), min = Math.min(r, g, b);
   let h, s, l = (max + min) / 2;
-  
+
   if (max == min) {
     h = s = 0; // achromatic
   } else {
@@ -129,15 +129,15 @@ function hslToRgb(h, s, l) {
 }
 
 
-function rgb2hwb(r, g, b) {
+function rgbToHwb(r, g, b) {
   r /= 255;
   g /= 255;
   b /= 255;
 
   let f, i,
-    w = Math.min(r, g, b);
-  v = Math.max(r, g, b);
-  black = 1 - v;
+    w = Math.min(r, g, b),
+    v = Math.max(r, g, b),
+    black = 1 - v;
 
   if (v === w) return { h: 0, w: w, b: black };
   f = r === w ? g - b : (g === w ? b - r : r - g);
@@ -146,7 +146,7 @@ function rgb2hwb(r, g, b) {
   return { h: (i - f / (v - w)) / 6, w: w, b: black }
 }
 
-function hwb2rgb(h, w, b) {
+function hwbToRgb(h, w, b) {
   h *= 6;
 
   let v = 1 - b, n, f, i;
@@ -168,6 +168,99 @@ function hwb2rgb(h, w, b) {
     case 4: return { r: n, g: w, b: v };
     case 5: return { r: v, g: w, b: n };
   }
+}
+
+function rgbToCmyk(R,G,B)
+{
+    if ((R == 0) && (G == 0) && (B == 0)) {
+        return [0, 0, 0, 1];
+    } else {
+        var calcR = 1 - (R / 255),
+            calcG = 1 - (G / 255),
+            calcB = 1 - (B / 255);
+
+        var K = Math.min(calcR, Math.min(calcG, calcB)),
+            C = (calcR - K) / (1 - K),
+            M = (calcG - K) / (1 - K),
+            Y = (calcB - K) / (1 - K);
+
+        return [C, M, Y, K];
+    }
+}
+var cmykToRgb = function(c, m, y, k, normalized){
+  c = (c / 100);
+  m = (m / 100);
+  y = (y / 100);
+  k = (k / 100);
+  
+  c = c * (1 - k) + k;
+  m = m * (1 - k) + k;
+  y = y * (1 - k) + k;
+  
+  var r = 1 - c;
+  var g = 1 - m;
+  var b = 1 - y;
+  
+  if(!normalized){
+      r = Math.round(255 * r);
+      g = Math.round(255 * g);
+      b = Math.round(255 * b);
+  }
+  
+  return {
+      r: r,
+      g: g,
+      b: b
+  }
+}
+
+function rgbToHsv(r, g, b) {
+  if (arguments.length === 1) {
+      g = r.g, b = r.b, r = r.r;
+  }
+  var max = Math.max(r, g, b), min = Math.min(r, g, b),
+      d = max - min,
+      h,
+      s = (max === 0 ? 0 : d / max),
+      v = max / 255;
+
+  switch (max) {
+      case min: h = 0; break;
+      case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
+      case g: h = (b - r) + d * 2; h /= 6 * d; break;
+      case b: h = (r - g) + d * 4; h /= 6 * d; break;
+  }
+
+  return {
+      h: h,
+      s: s,
+      v: v
+  };
+}
+
+function hsvToRgb(h, s, v) {
+  var r, g, b, i, f, p, q, t;
+  if (arguments.length === 1) {
+      s = h.s, v = h.v, h = h.h;
+  }
+  i = Math.floor(h * 6);
+  f = h * 6 - i;
+  p = v * (1 - s);
+  q = v * (1 - f * s);
+  t = v * (1 - (1 - f) * s);
+  switch (i % 6) {
+      case 0: r = v, g = t, b = p; break;
+      case 1: r = q, g = v, b = p; break;
+      case 2: r = p, g = v, b = t; break;
+      case 3: r = p, g = q, b = v; break;
+      case 4: r = t, g = p, b = v; break;
+      case 5: r = v, g = p, b = q; break;
+  }
+  return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+  };
 }
 
 /**

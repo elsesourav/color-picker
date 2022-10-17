@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* outline: solid 1px #f00; */
+  outline: solid 1px #f00;
   font-family: sans-serif;
   user-select: none;
   touch-action: none;
@@ -36,10 +36,11 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  margin-top: 50px;
   justify-content: center;
+  align-content: flex-start;
+  overflow: hidden;
 }
 .background {
   background: #222222;
@@ -51,9 +52,10 @@ body {
   background-position: 0 0, 2px 0, 2px -2px, 0px 2px;
 }
 #me {
-  position: relative;
-  height: 40px; 
+  position: fixed;
+  height: 50px;
   width: 100%;
+  inset: 0;
   padding-right: 10px;
   padding-top: 10px;
   text-align: right;
@@ -71,11 +73,12 @@ canvas {
 main {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: min-content;
   gap: var(--gap);
   display: grid;
   place-items: center;
   grid-template-rows: calc(var(--color-picker-radius) + 18px) var(--brightness-picker-height)  200px;
+  
 }
 main #main-picker {
   position: relative;
@@ -192,7 +195,7 @@ input {
   outline: none;
   border-radius: 6px;
   border: none;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 16px;
   padding: 1px 6px;
   display: flex;
@@ -207,108 +210,24 @@ input {
   position: relative;
   width: 100%;
   height: 100%;
-  grid-area: cpy;
-}
-
-
-
-
-
-
-
-
-
-
-
-#hex-color-code,
-#rgb-color-code {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background: transparent;
-  justify-content: center;
-  text-shadow: 1px 1px 2px #000000;
-  align-items: center;
-  cursor: grab;
-}
-#hex-color-code.copy,
-#rgb-color-code.copy {
-  cursor: grabbing;
-}
-#hex-color-code span {
-  display: flex;
-  padding: 3px 8px;
-}
-#hex-color-code.copy span {
-  background: #16b1b1;
-}
-#span #rgb-color-code {
-  padding: 3px 8px;
-}
-#hex-color-code b {
-  color: var(--color);
-  padding-right: 2px;
-}
-#hex-color-code.copy b {
-  color: #ffffff;
-}
-#hex-color-code p {
-  font-weight: bold;
-}
-#hex-color-code.copy p {
-  color: #ffffff;
-}
-#rgb-color-code b {
-  padding-right: 2px;
-}
-#rgb-color-code.copy b {
-  color: #ffffff;
-}
-#rgb-color-code p {
-  font-weight: bold;
-  color: var(--color);
-}
-#rgb-color-code.copy p {
-  color: #ffffff;
-}
-#rgb-color-code.copy {
-  background: #16b1b1;
-}
-#show-color {
-  position: relative;
-  width: 100%;
-  height: calc(100% - 10px);
-  background: var(--color);
-  box-shadow: 0 0 3px #000000;
-  border-radius: 5px;
-}
-#tost {
-  position: absolute;
-  z-index: 100;
-  bottom: -50px;
-  width: 200px;
-  height: 40px;
-  background: #ffffff;
-  left: calc(50% - 100px);
   display: grid;
   place-items: center;
-  font-weight: bold;
-  font-weight: 900;
-  border-radius: 10px;
-  box-shadow: 0 0 3px #000, 0 0 10px #000000;
-  border: solid 1px #ff0000;
-  text-shadow: 0 0 1px #0000;
-  opacity: 0;
-  transition: opacity linear 0.3s;
-  user-select: none;
-  touch-action: none;
+  cursor: var(--cursor);
+  top: 3px;
+  grid-area: cpy;
 }
-#tost.active {
-  opacity: 1;
-  transition: opacity linear 1s;
+.copy-icon::before, .copy-icon::after {
+  position: absolute;
+  content: "";
+  width: 14px;
+  height: 16px;
+  border: solid 1px #fff;
+  background: #181818;
+  border-radius: 3px;
+  box-shadow: 0 0 2px #000000;
 }
-
-nn {
-  background-color: hwb(233 16% 78%);
+.copy-icon::before {
+  left: 6px;
+  top: 0;
+  box-shadow: inset 0 0 2px #000000, 0 0 3px #000000;
 }
