@@ -132,7 +132,7 @@ main #brightness-picker canvas {
   z-index: 2;
 }
 main #color-output-box {
-  position: relative;
+  position: fixed;
   width: 340px;
   height: 200px;
   border-radius: 12px;
@@ -142,6 +142,9 @@ main #color-output-box {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 2fr 2fr 2fr;
   background: var(--color);
+  bottom: 50px;
+  z-index: 10;
+  transition: bottom 0.3s linear;
 }
 .color-output {
   position: relative;
@@ -198,7 +201,7 @@ input {
   border-radius: 6px;
   border: none;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   padding: 1px 6px;
   display: flex;
   align-items: center;
@@ -223,13 +226,17 @@ input {
   content: "";
   width: 14px;
   height: 16px;
-  border: solid 1px #fff;
   background: #181818;
   border-radius: 3px;
+  border: solid 1px #ffffff;
   box-shadow: 0 0 2px #000000;
 }
 .copy-icon::before {
   left: 6px;
   top: 0;
   box-shadow: inset 0 0 2px #000000, 0 0 3px #000000;
+}
+.copy-icon.hover::after, .copy-icon.hover::before {
+  background: #ffffff;
+  border: solid 1px var(--color);
 }

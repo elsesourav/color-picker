@@ -3,12 +3,13 @@ const mainPicker = ID("main-picker");
 const brightnessPicker = ID("brightness-picker");
 const main = document.querySelector("main");
 const allInput = document.querySelectorAll("input");
+const copyIcon = document.querySelectorAll(".copy-icon");
 const rgbInp = ID("rgb-input");
 const hexInp = ID("hex-input");
 const hslInp = ID("hsl-input");
 const hwbInp = ID("hwb-input");
 const hsvInp = ID("hsv-input");
-const hsbInp = ID("hsb-input");
+const cmykInp = ID("cmyk-input");
 
 /* --------- variables ------------ */
 const mainSize = 300; // main color picker canvas size
@@ -39,6 +40,8 @@ addEventListener("load", () => {
   !isMobile && root.style.setProperty('--cursor', `pointer`);
   root.style.setProperty('--brightness-picker-height', `${bsh}px`);
   root.style.setProperty('--brightness-picker-width', `${bsw}px`);
+
+  // create brightness selector
   const gradient = bc.createLinearGradient(0, 0, bsw, bsh)// create lenear gradient
   gradient.addColorStop(0, "#FFFFFF");
   gradient.addColorStop(1, "#000000");
@@ -76,7 +79,8 @@ addEventListener("load", () => {
     // set location x and y to main cursor position
     root.style.setProperty('--cursor-x', `${vector.x}px`);
     root.style.setProperty('--cursor-y', `${vector.y}px`);
-    setupTexts(r, g, b);
+
+    !isMobile && setupTexts(r, g, b);
   }
 
   // pick color any particular positionfrom main canvas
@@ -95,13 +99,12 @@ addEventListener("load", () => {
     let x = vector.x - r;
 
     const hipotanis = Math.sqrt(y * y + x * x);
-    const angle = Math.atan2(y, x);
 
     if (hipotanis >= r - 1) {
+      const angle = Math.atan2(y, x);
       vector.x = (cos(angle) * r * 0.99) + r;
       vector.y = (sin(angle) * r * 0.99) + r;
     }
-
     setMainCss();
   }
 
@@ -131,7 +134,6 @@ addEventListener("load", () => {
     setMainCss();
   }
 
-
   function setupAllCss(x, y, r, g, b, bright) {
     vector.x = x; vector.y = y;
     setupTexts(r, g, b)
@@ -141,7 +143,6 @@ addEventListener("load", () => {
     const dx = ((bsw / 255) * bright).toFixed(2);
     root.style.setProperty('--cursor-bx', `${bsw - dx}px`);
   }
-
 
   // find color 
   function findColorLocation(rgb, size) {
@@ -199,22 +200,21 @@ addEventListener("load", () => {
   }
 
 
-
   function setupTexts(r, g, b) {
     const hex = rgbToHex(r, g, b);
     const hsl = rgbToHsl(r, g, b);
     const hwb = rgbToHwb(r, g, b);
     const hsv = rgbToHsv(r, g, b);
-    const hsb = rgbToHsb(r, g, b);
+    const hsb = rgbToCmyk(r, g, b);
 
-    rgbInp.value = `${r}, ${g}, ${b}, ${RGBA.a}`;
+    rgbInp.value = `${r}, ${g}, ${b}`;
     hexInp.value = `${hex}`;
 
-    hslInp.value = `${hsl.h.toFixed(0)}, ${hsl.s.toFixed(0)}%, ${hsl.l.toFixed(0)}%`;
+    hslInp.value = `${hsl.h.toFixed(0)}°, ${hsl.s.toFixed(0)}%, ${hsl.l.toFixed(0)}%`;
 
-    hwbInp.value = `${Math.round(hwb.h)}, ${Math.round(hwb.w)}%, ${Math.round(hwb.b)}%`;
-    hsvInp.value = `${Math.round(hsv.h)}, ${Math.round(hsv.s)}%, ${Math.round(hsv.v)}%`;
-    hsbInp.value = `${Math.round(hsb.h)}, ${Math.round(hsb.s)}%, ${Math.round(hsb.b)}%`;
+    hwbInp.value = `${round(hwb.h)}°, ${round(hwb.w)}%, ${round(hwb.b)}%`;
+    hsvInp.value = `${round(hsv.h)}°, ${round(hsv.s)}%, ${round(hsv.v)}%`;
+    cmykInp.value = `${hsb.c}%, ${hsb.m}%, ${hsb.y}%, ${hsb.k}%`;
   }
 
 
@@ -232,6 +232,26 @@ addEventListener("load", () => {
     brightPickerOffset = bc.canvas.getBoundingClientRect();
   })
 
+  copyIcon.forEach((copy, i) => {
+    let value = allInput[i].value;
+    copy.addEventListener("click", () => {
+      i === 0 ? copyText(`#${value}`, allInput[i], copy) : copyText(value, allInput[i], copy);
+    })
+  })
+
+  allInput.forEach((input, i) => {
+    input.addEventListener("input", (e) => {
+      switch (i) {
+        case 0:
+          
+          break;
+      
+        default:
+          break;
+      }
+    })
+  })
+
   // mouse move event
   mainPicker.addEventListener("mousedown", () => mainCvsClicking = true);
   document.body.addEventListener("mousemove", pickMainCanvasColor);
@@ -243,7 +263,10 @@ addEventListener("load", () => {
   // touch move event
   mainPicker.addEventListener("touchstart", () => mainCvsClicking = true);
   mainPicker.addEventListener("touchmove", pickMainCanvasColor);
-  document.body.addEventListener("touchend", () => mainCvsClicking = false);
+  document.body.addEventListener("touchend", () => {
+    mainCvsClicking = false;
+    setupTexts(RGBA.r, RGBA.g, RGBA.b);
+  });
 
   // mouse move event
   brightnessPicker.addEventListener("mousedown", () => brightCvsClicking = true);
@@ -256,6 +279,9 @@ addEventListener("load", () => {
   // touch move event
   brightnessPicker.addEventListener("touchstart", () => brightCvsClicking = true);
   brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
-  document.body.addEventListener("touchend", () => brightCvsClicking = false);
+  document.body.addEventListener("touchend", () => {
+    brightCvsClicking = false
+    setupTexts(RGBA.r, RGBA.g, RGBA.b);
+  });
 
 })

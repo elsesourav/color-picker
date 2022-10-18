@@ -92,7 +92,7 @@ const rgbToHsl = (r, g, b) => {
         : 4 + (r - g) / s
     : 0;
 
- return {
+  return {
     h: 60 * h < 0 ? 60 * h + 360 : 60 * h,
     s: 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0),
     l: (100 * (2 * l - s)) / 2,
@@ -108,25 +108,38 @@ const hlsToRgb = (h, s, l) => {
   return { r: 255 * f(0), g: 255 * f(8), b: 255 * f(4) };
 };
 
-/* ------------- hsb ------------ */
-const rgbToHsb = (r, g, b) => {
-  r /= 255;
-  g /= 255;
-  b /= 255;
-  const v = Math.max(r, g, b),
-    n = v - Math.min(r, g, b);
-  const h =
-    n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
-  return { h: 60 * (h < 0 ? h + 6 : h), s: v && (n / v) * 100, b: v * 100 }
-};
-const hsbToRgb = (h, s, b) => {
-  s /= 100;
-  b /= 100;
-  const k = (n) => (n + h / 60) % 6;
-  const f = (n) => b * (1 - s * Math.max(0, Math.min(k(n), 4 - k(n), 1)));
-  return [255 * f(5), 255 * f(3), 255 * f(1)];
-};
+/* ------------- cmyk ------------ */
+function cmykToRgb(c, m, y, k) {
+  c /= 100; m /= 100; y /= 100; k /= 100;
+  c *= (1 - k) + k; m *= (1 - k) + k; y *= (1 - k) + k;
+  return {
+    r: Math.round(255 * (1 - c)),
+    g: Math.round(255 * (1 - m)),
+    b: Math.round(255 * (1 - y))
+  }
+}
+function rgbToCmyk(r, g, b) {
+  let c = 1 - (r / 255);
+  let m = 1 - (g / 255);
+  let y = 1 - (b / 255);
+  let k = Math.min(c, Math.min(m, y));
 
+  c = (c - k) / (1 - k);
+  m = (m - k) / (1 - k);
+  y = (y - k) / (1 - k);
+
+  c = Math.round(c * 10000 / 100);
+  m = Math.round(m * 10000 / 100);
+  y = Math.round(y * 10000 / 100);
+  k = Math.round(k * 10000 / 100);
+
+  return {
+    c: isNaN(c) ? 0 : c,
+    m: isNaN(m) ? 0 : m,
+    y: isNaN(y) ? 0 : y,
+    k: isNaN(k) ? 0 : k
+  }
+}
 /* ------------- hwb ------------ */
 function rgbToHwb(r, g, b) {
   r /= 255;

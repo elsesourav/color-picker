@@ -32,3 +32,27 @@ function isCloseToColor(c, tc, extra) {
   );
 }
 
+
+const _inp_ = document.createElement("input");
+document.body.appendChild(_inp_);
+_inp_.style.position = "fixed";
+_inp_.style.scale = "0";
+
+function copyText(str, ele, ele1) {
+  _inp_.type = "text";
+  _inp_.value = str;
+  _inp_.select();
+  _inp_.setSelectionRange(0, 30); 
+  navigator.clipboard.writeText(str);
+  
+  ele.focus();
+  ele.select();
+  
+  ele1.classList.add("hover");
+  
+  setTimeout(() => {
+    ele1.classList.remove("hover");
+    _inp_.focus();
+    _inp_.select();
+  }, 2000);
+}
