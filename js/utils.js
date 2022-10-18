@@ -1,8 +1,4 @@
 "use strict"
-const root = document.querySelector(":root");
-const mainCvsR = 300;
-const mainRadius = 300;
-root.style.setProperty('--color-picker-radius', `${mainRadius}px`);
 
 class Canvas {
   constructor(appendElement, width, height) {
@@ -59,6 +55,7 @@ const sin = x => Math.sin(x);
 const cos = y => Math.cos(y);
 const atan2 = (y, x) => Math.atan2(y, x);
 const abs = n => Math.abs(n);
+const round = n => Math.round(n);
 
 const toRadian = degree => (degree * Math.PI) / 180;// degree convert to radian
 const toDegree = radian => (radian * 180) / Math.PI;// radian convert to Degree
@@ -79,7 +76,7 @@ const map = (point, start, end, min, max) => {
 
 
 let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
-!isMobile && root.style.setProperty('--cursor', `pointer`);
+
 // isMobile = true;
 
 /* ------------- hsl ------------ */
@@ -94,10 +91,11 @@ const rgbToHsl = (r, g, b) => {
         ? 2 + (b - r) / s
         : 4 + (r - g) / s
     : 0;
-  return {
-    r: 60 * h < 0 ? 60 * h + 360 : 60 * h,
-    g: 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0),
-    b: (100 * (2 * l - s)) / 2,
+
+ return {
+    h: 60 * h < 0 ? 60 * h + 360 : 60 * h,
+    s: 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0),
+    l: (100 * (2 * l - s)) / 2,
   };
 };
 const hlsToRgb = (h, s, l) => {
@@ -107,7 +105,7 @@ const hlsToRgb = (h, s, l) => {
   const a = s * Math.min(l, 1 - l);
   const f = n =>
     l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  return [255 * f(0), 255 * f(8), 255 * f(4)];
+  return { r: 255 * f(0), g: 255 * f(8), b: 255 * f(4) };
 };
 
 /* ------------- hsb ------------ */

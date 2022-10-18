@@ -177,9 +177,10 @@ main #color-output-box {
 #hex-in-fild #has {
   position: relative;
   width: 100%;
+  padding-top: 2px;
   text-align: center;
   font-weight: 900;
-  color: var(--color);
+  color: #ffffff;
   height: 100%;
 }
 #hex-input {
