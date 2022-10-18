@@ -4,10 +4,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  outline: solid 1px #f00;
+  /* outline: solid 1px #f00; */
   font-family: sans-serif;
   user-select: none;
   touch-action: none;
+  border: none;
 }
 :root {
   --color: #ffffff;
@@ -37,7 +38,7 @@ body {
   width: 100vw;
   height: 100vh;
   display: grid;
-  margin-top: 50px;
+  margin-top: 40px;
   justify-content: center;
   align-content: flex-start;
   overflow: hidden;
@@ -53,7 +54,7 @@ body {
 }
 #me {
   position: fixed;
-  height: 50px;
+  height: 40px;
   width: 100%;
   inset: 0;
   padding-right: 10px;
@@ -125,7 +126,7 @@ main #brightness-picker canvas {
   border-radius: 3px;
   top: -20%;
   left: calc(var(--cursor-bx) - var(--bright-selecter-w) / 2);
-  border: solid 2px #ffffff;
+  border: solid 2px hsl(0, 0%, 100%);
   background: var(--color-b);
   outline: solid 2px #00000066;
   z-index: 2;
@@ -196,7 +197,7 @@ input {
   border-radius: 6px;
   border: none;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   padding: 1px 6px;
   display: flex;
   align-items: center;

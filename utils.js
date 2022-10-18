@@ -1,8 +1,8 @@
 "use strict"
 const root = document.querySelector(":root");
-const mainCvsW = 300;
-const mainCvsH = 300;
-root.style.setProperty('--color-picker-radius', `${mainCvsH}px`);
+const mainCvsR = 300;
+const mainRadius = 300;
+root.style.setProperty('--color-picker-radius', `${mainRadius}px`);
 
 class Canvas {
   constructor(appendElement, width, height) {
@@ -80,55 +80,56 @@ const map = (point, start, end, min, max) => {
 
 let isMobile = localStorage.mobile || window.navigator.maxTouchPoints > 1;
 !isMobile && root.style.setProperty('--cursor', `pointer`);
-// isMobile = true;
+isMobile = true;
 
-function rgbToHsl(r, g, b) {
-  r /= 255, g /= 255, b /= 255;
-  let max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
+/* ------------- hsl ------------ */
+const rgbToHsl = (r, g, b) => {
+  r /= 255; g /= 255; b /= 255;
+  const l = Math.max(r, g, b);
+  const s = l - Math.min(r, g, b);
+  const h = s
+    ? l === r
+      ? (g - b) / s
+      : l === g
+        ? 2 + (b - r) / s
+        : 4 + (r - g) / s
+    : 0;
+  return {
+    r: 60 * h < 0 ? 60 * h + 360 : 60 * h,
+    g: 100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0),
+    b: (100 * (2 * l - s)) / 2,
+  };
+};
+const hlsToRgb = (h, s, l) => {
+  s /= 100;
+  l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n =>
+    l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [255 * f(0), 255 * f(8), 255 * f(4)];
+};
 
-  if (max == min) {
-    h = s = 0; // achromatic
-  } else {
-    let d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
+/* ------------- hsb ------------ */
+const rgbToHsb = (r, g, b) => {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const v = Math.max(r, g, b),
+    n = v - Math.min(r, g, b);
+  const h =
+    n === 0 ? 0 : n && v === r ? (g - b) / n : v === g ? 2 + (b - r) / n : 4 + (r - g) / n;
+  return { h: 60 * (h < 0 ? h + 6 : h), s: v && (n / v) * 100, b: v * 100 }
+};
+const hsbToRgb = (h, s, b) => {
+  s /= 100;
+  b /= 100;
+  const k = (n) => (n + h / 60) % 6;
+  const f = (n) => b * (1 - s * Math.max(0, Math.min(k(n), 4 - k(n), 1)));
+  return [255 * f(5), 255 * f(3), 255 * f(1)];
+};
 
-  return [h, s, l];
-}
-
-function hslToRgb(h, s, l) {
-  let r, g, b;
-
-  if (s == 0) {
-    r = g = b = l; // achromatic
-  } else {
-    let hue2rgb = function hue2rgb(p, q, t) {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1 / 6) return p + (q - p) * 6 * t;
-      if (t < 1 / 2) return q;
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-      return p;
-    }
-
-    let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    let p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-
+/* ------------- hwb ------------ */
 function rgbToHwb(r, g, b) {
   r /= 255;
   g /= 255;
@@ -139,13 +140,12 @@ function rgbToHwb(r, g, b) {
     v = Math.max(r, g, b),
     black = 1 - v;
 
-  if (v === w) return { h: 0, w: w, b: black };
+  if (v === w) return { h: 0, w: w * 100, b: black * 100 };
   f = r === w ? g - b : (g === w ? b - r : r - g);
   i = r === w ? 3 : (g === w ? 5 : 1);
 
-  return { h: (i - f / (v - w)) / 6, w: w, b: black }
+  return { h: ((i - f / (v - w)) / 6) * 100, w: w * 100, b: black * 100 };
 }
-
 function hwbToRgb(h, w, b) {
   h *= 6;
 
@@ -170,78 +170,35 @@ function hwbToRgb(h, w, b) {
   }
 }
 
-function rgbToCmyk(R,G,B)
-{
-    if ((R == 0) && (G == 0) && (B == 0)) {
-        return [0, 0, 0, 1];
-    } else {
-        var calcR = 1 - (R / 255),
-            calcG = 1 - (G / 255),
-            calcB = 1 - (B / 255);
 
-        var K = Math.min(calcR, Math.min(calcG, calcB)),
-            C = (calcR - K) / (1 - K),
-            M = (calcG - K) / (1 - K),
-            Y = (calcB - K) / (1 - K);
-
-        return [C, M, Y, K];
-    }
-}
-var cmykToRgb = function(c, m, y, k, normalized){
-  c = (c / 100);
-  m = (m / 100);
-  y = (y / 100);
-  k = (k / 100);
-  
-  c = c * (1 - k) + k;
-  m = m * (1 - k) + k;
-  y = y * (1 - k) + k;
-  
-  var r = 1 - c;
-  var g = 1 - m;
-  var b = 1 - y;
-  
-  if(!normalized){
-      r = Math.round(255 * r);
-      g = Math.round(255 * g);
-      b = Math.round(255 * b);
-  }
-  
-  return {
-      r: r,
-      g: g,
-      b: b
-  }
-}
-
+/* ------------- hsv ------------ */
 function rgbToHsv(r, g, b) {
   if (arguments.length === 1) {
-      g = r.g, b = r.b, r = r.r;
+    g = r.g, b = r.b, r = r.r;
   }
   var max = Math.max(r, g, b), min = Math.min(r, g, b),
-      d = max - min,
-      h,
-      s = (max === 0 ? 0 : d / max),
-      v = max / 255;
+    d = max - min,
+    h,
+    s = (max === 0 ? 0 : d / max),
+    v = max / 255;
 
   switch (max) {
-      case min: h = 0; break;
-      case r: h = (g - b) + d * (g < b ? 6: 0); h /= 6 * d; break;
-      case g: h = (b - r) + d * 2; h /= 6 * d; break;
-      case b: h = (r - g) + d * 4; h /= 6 * d; break;
+    case min: h = 0; break;
+    case r: h = (g - b) + d * (g < b ? 6 : 0); h /= 6 * d; break;
+    case g: h = (b - r) + d * 2; h /= 6 * d; break;
+    case b: h = (r - g) + d * 4; h /= 6 * d; break;
   }
 
   return {
-      h: h,
-      s: s,
-      v: v
+    h: h * 100,
+    s: s * 100,
+    v: v * 100
   };
 }
-
 function hsvToRgb(h, s, v) {
   var r, g, b, i, f, p, q, t;
   if (arguments.length === 1) {
-      s = h.s, v = h.v, h = h.h;
+    s = h.s, v = h.v, h = h.h;
   }
   i = Math.floor(h * 6);
   f = h * 6 - i;
@@ -249,17 +206,17 @@ function hsvToRgb(h, s, v) {
   q = v * (1 - f * s);
   t = v * (1 - (1 - f) * s);
   switch (i % 6) {
-      case 0: r = v, g = t, b = p; break;
-      case 1: r = q, g = v, b = p; break;
-      case 2: r = p, g = v, b = t; break;
-      case 3: r = p, g = q, b = v; break;
-      case 4: r = t, g = p, b = v; break;
-      case 5: r = v, g = p, b = q; break;
+    case 0: r = v, g = t, b = p; break;
+    case 1: r = q, g = v, b = p; break;
+    case 2: r = p, g = v, b = t; break;
+    case 3: r = p, g = q, b = v; break;
+    case 4: r = t, g = p, b = v; break;
+    case 5: r = v, g = p, b = q; break;
   }
   return {
-      r: Math.round(r * 255),
-      g: Math.round(g * 255),
-      b: Math.round(b * 255)
+    r: Math.round(r * 255),
+    g: Math.round(g * 255),
+    b: Math.round(b * 255)
   };
 }
 
@@ -276,11 +233,4 @@ function getRGB(str) {
     .split(")").join("").split(" ").map(e => parseInt(e));
 }
 
-function rgbToHex(r, g, b) {
-  let s = "#";
-  for (let i = 0; i < 3; i++) {
-    let t = ([r, g, b][i] % 256).toString(16);
-    s += `${t}`.length < 2 ? `0${t}` : t;
-  }
-  return s;
-}
+const rgbToHex = (r, g, b) => ((r << 16) + (g << 8) + b).toString(16).padStart(6, '0');
