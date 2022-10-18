@@ -60,36 +60,36 @@ addEventListener("load", () => {
 
 
   function setCanvasColor(needReturn = false, isDrawImage = false) {
-    // if (isDrawImage) {
-    //   mc.clearRect();
-    //   mc.putImageData(imdata, 0, 0);
-    //   // creat brightness color
-    //   const gradient = mc.createRadialGradient(x, y, r, x, y, 1); // create radial gradient
-    //   const divi = 300;
-    //   const delta = 1 / divi;
-    //   for (let i = 0; i <= 1; i += delta) {
-    //     gradient.addColorStop(i, `rgba(${bright}, ${bright}, ${bright}, ${i})`);
-    //   }
-    //   mc.fillStyle(gradient);
-    //   mc.arc(x, y, r - insert, 0, Math.PI * 2);
-    //   mc.fill();
-    // }
+    if (isDrawImage) {
+      mc.clearRect();
+      mc.putImageData(imdata, 0, 0);
+      // creat brightness color
+      const gradient = mc.createRadialGradient(x, y, r, x, y, 1); // create radial gradient
+      const divi = 300;
+      const delta = 1 / divi;
+      for (let i = 0; i <= 1; i += delta) {
+        gradient.addColorStop(i, `rgba(${bright}, ${bright}, ${bright}, ${i})`);
+      }
+      mc.fillStyle(gradient);
+      mc.arc(x, y, r - insert, 0, Math.PI * 2);
+      mc.fill();
+    }
 
     if (!needReturn) {
-      // let rgba = mc.getImageData(vector.x, vector.y, 1, 1).data;
-      // if (!rgba[3]) return;
+      let rgba = mc.getImageData(vector.x, vector.y, 1, 1).data;
+      if (!rgba[3]) return;
 
-      // rgbColor.r = rgba[0];
-      // rgbColor.g = rgba[1];
-      // rgbColor.b = rgba[2];
+      rgbColor.r = rgba[0];
+      rgbColor.g = rgba[1];
+      rgbColor.b = rgba[2];
 
-      // const { r, g, b } = rgbColor;
-      // root.style.setProperty('--color', `#${rgbToHex(r, g, b)}`);
+      const { r, g, b } = rgbColor;
+      root.style.setProperty('--color', `#${rgbToHex(r, g, b)}`);
       // set location x andy to cursor position
       root.style.setProperty('--cursor-x', `${vector.x}px`);
       root.style.setProperty('--cursor-y', `${vector.y}px`);
 
-      // setupTexts(r, g, b);
+      setupTexts(r, g, b);
     }
 
     if (needReturn)
