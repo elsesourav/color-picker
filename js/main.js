@@ -199,22 +199,22 @@ addEventListener("load", () => {
     const cmyk = rgbToCmyk(r, g, b);
 
     if (index != 0)
-    hexInp.value = `${hex}`;
+      hexInp.value = `${hex}`;
 
     if (index != 1)
-    rgbInp.value = `${round(r)}, ${round(g)}, ${round(b)}`;
+      rgbInp.value = `${round(r)}, ${round(g)}, ${round(b)}`;
 
     if (index != 2)
-    hslInp.value = `${hsl.h.toFixed(0)}°, ${hsl.s.toFixed(0)}%, ${hsl.l.toFixed(0)}%`;
+      hslInp.value = `${hsl.h.toFixed(0)}°, ${hsl.s.toFixed(0)}%, ${hsl.l.toFixed(0)}%`;
 
     if (index != 3)
-    hwbInp.value = `${round(hwb.h)}°, ${round(hwb.w)}%, ${round(hwb.b)}%`;
+      hwbInp.value = `${round(hwb.h)}°, ${round(hwb.w)}%, ${round(hwb.b)}%`;
 
     if (index != 4)
-    hsvInp.value = `${round(hsv.h)}°, ${round(hsv.s)}%, ${round(hsv.v)}%`;
+      hsvInp.value = `${round(hsv.h)}°, ${round(hsv.s)}%, ${round(hsv.v)}%`;
 
     if (index != 5)
-    cmykInp.value = `${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%`;
+      cmykInp.value = `${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%`;
   }
 
 
@@ -236,101 +236,46 @@ addEventListener("load", () => {
       i === 0 ? copyText(`#${value}`, allInput[i], copy) : copyText(value, allInput[i], copy);
     })
   })
-  
 
 
+  // all input event
   allInput.forEach((input, i) => {
     input.addEventListener("keyup", (e) => {
-      const value = e.target.value;
-      let color;
-      switch (i) {
-        case 0:
-          color = hexToRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
-        case 1:
-          color = validRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
-        case 2:
-          color = hslToRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
-        case 3:
-          color = hwbToRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
-        case 4:
-          color = hsvToRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
-        case 5:
-          color = cmykToRgb(value);
-          if(color) findColorLocation(color, i);
-          break;
+      try {
+        const value = e.target.value;
+        let color;
+        switch (i) {
+          case 0:
+            color = hexToRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+          case 1:
+            color = validRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+          case 2:
+            color = hslToRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+          case 3:
+            color = hwbToRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+          case 4:
+            color = hsvToRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+          case 5:
+            color = cmykToRgb(value);
+            if (color) findColorLocation(color, i);
+            break;
+        }
+      } catch (error) {
+        console.log(error);
       }
     });
   });
 
-
-  // allInput.forEach((input, i) => {
-  //   input.addEventListener("keyup", (e) => {
-  //     try {
-  //       console.log(e.target.value);
-  //       const val = e.target.value.split("%").join("").split("°").join("");
-  //       switch (i) {
-  //         case 0:
-
-            
-  //           break;
-  //         case 1:
-  //           if (/(\d{1,3}), (\d{1,3}), (\d{1,3})/.test(val)) {
-  //             let c = val.split(", ");
-  //             RGB.r = parseInt(c[0]); RGB.g = parseInt(c[1]); RGB.b = parseInt(c[2]);
-  //             findColorLocation(RGB, mainSize);
-  //             rgbInp.value = val;
-  //           }
-  //           break;
-  //         case 2: 
-  //           if (/(\d{1,3}), (\d{1,3}), (\d{1,3})/.test(val)) {
-  //             let c = val.split(", ");
-  //             RGB = hslToRgb(c[0], c[1], c[2]);
-  //             findColorLocation(RGB, mainSize);
-  //             console.log(e.target.value);
-  //             hslInp.value = e.target.value;
-  //           }
-  //           break;
-  //         case 3:
-  //           if (/(\d{1,3}), (\d{1,3}), (\d{1,3})/.test(val)) {
-  //             let c = val.split(", ");
-  //             RGB = hwbToRgb(c[0], c[1], c[2]);
-  //             findColorLocation(RGB, mainSize);
-  //             hwbInp.value = e.target.value;
-  //           }
-  //           break;
-  //         case 4:
-  //           if (/(\d{1,3}), (\d{1,3}), (\d{1,3})/.test(val)) {
-  //             let c = val.split(", ");
-  //             RGB = hsvToRgb(c[0], c[1], c[2]);
-  //             findColorLocation(RGB, mainSize);
-  //             hsvInp.value = e.target.value;
-  //           }
-  //           break;
-  //         case 5:
-  //           if (/(\d{1,3}), (\d{1,3}), (\d{1,3}), (\d{1,3})/.test(val)) {
-  //             let c = val.split(", ");
-  //             RGB = cmykToRgb(c[0], c[1], c[2], c[3]);
-  //             findColorLocation(RGB, mainSize);
-  //             cmykInp.value = e.target.value;
-  //           }
-  //           break;
-
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   })
-  // })
 
   // mouse move event
   mainPicker.addEventListener("mousedown", () => mainCvsClicking = true);
@@ -344,8 +289,8 @@ addEventListener("load", () => {
   mainPicker.addEventListener("touchstart", () => mainCvsClicking = true);
   mainPicker.addEventListener("touchmove", pickMainCanvasColor);
   document.body.addEventListener("touchend", () => {
+    mainCvsClicking && setupTexts(RGB.r, RGB.g, RGB.b);
     mainCvsClicking = false;
-    setupTexts(RGB.r, RGB.g, RGB.b);
   });
 
   // mouse move event
@@ -360,8 +305,8 @@ addEventListener("load", () => {
   brightnessPicker.addEventListener("touchstart", () => brightCvsClicking = true);
   brightnessPicker.addEventListener("touchmove", pickBriCanvasColor);
   document.body.addEventListener("touchend", () => {
+    brightCvsClicking && setupTexts(RGB.r, RGB.g, RGB.b);
     brightCvsClicking = false
-    setupTexts(RGB.r, RGB.g, RGB.b);
   });
 
 })

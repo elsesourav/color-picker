@@ -212,7 +212,7 @@ input {
   box-shadow: inset 1px 1px 2px #000000, inset -1px -1px 2px #282828;
   background: #181818;
   color: #ffffff;
-  caret-color: var(--color);
+  caret-color: #ffffff;
 }
 .copy-icon {
   position: relative;
