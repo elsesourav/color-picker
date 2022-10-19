@@ -231,8 +231,8 @@ addEventListener("load", () => {
   })
 
   copyIcon.forEach((copy, i) => {
-    let value = allInput[i].value;
     copy.addEventListener("click", () => {
+      let value = allInput[i].value;
       i === 0 ? copyText(`#${value}`, allInput[i], copy) : copyText(value, allInput[i], copy);
     })
   })
